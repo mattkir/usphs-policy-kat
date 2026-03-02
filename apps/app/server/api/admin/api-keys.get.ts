@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
       name: schema.apikey.name,
       prefix: schema.apikey.prefix,
       start: schema.apikey.start,
-      userId: schema.apikey.userId,
+      referenceId: schema.apikey.referenceId,
       enabled: schema.apikey.enabled,
       expiresAt: schema.apikey.expiresAt,
       createdAt: schema.apikey.createdAt,
@@ -20,6 +20,6 @@ export default defineEventHandler(async (event) => {
       userRole: schema.user.role,
     })
     .from(schema.apikey)
-    .leftJoin(schema.user, eq(schema.user.id, schema.apikey.userId))
+    .leftJoin(schema.user, eq(schema.user.id, schema.apikey.referenceId))
     .orderBy(desc(schema.apikey.createdAt))
 })

@@ -8,7 +8,7 @@ interface ApiKeyRow {
   name: string | null
   prefix: string | null
   start: string | null
-  userId: string
+  referenceId: string
   enabled: boolean
   expiresAt: string | null
   createdAt: string
