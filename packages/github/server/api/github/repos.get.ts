@@ -30,7 +30,7 @@ const querySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const requestLog = useLogger(event)
-  await requireAdmin(event)
+  const { user } = await requireAdmin(event)
   const config = useRuntimeConfig()
   const query = await getValidatedQuery(event, querySchema.parse)
 
@@ -50,12 +50,13 @@ export default defineEventHandler(async (event) => {
     ? await (auth.type === 'pat' ? listUserRepos(auth.token) : listAppRepos(auth))
     : await listReposCached(buildFingerprint(auth), auth)
 
-  const filtered = query.owner
-    ? repos.filter(repo => repo.owner.toLowerCase() === query.owner?.toLowerCase())
+  const ownerFilter = query.owner ?? (user as { username?: string }).username
+  const filtered = ownerFilter
+    ? repos.filter(repo => repo.owner.toLowerCase() === ownerFilter.toLowerCase())
     : repos
 
   requestLog.set({
-    ownerFilter: query.owner || null,
+    ownerFilter: ownerFilter || null,
     force: query.force === true,
     cacheMode: query.force ? 'bypass' : 'swr',
     totalRepos: repos.length,
