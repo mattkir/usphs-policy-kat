@@ -134,9 +134,9 @@ To get one manually: [Vercel Dashboard](https://vercel.com) → your project →
 
 ### `REDIS_URL`
 
-Redis connection URL for bot state persistence (tracks which threads the bot is subscribed to). Falls back to in-memory state if not set — fine for development, but state is lost on restart.
+Redis connection URL for stateful features. When set, the app uses Redis for bot state persistence and NuxtHub KV storage; when unset, bot state falls back to in-memory storage and NuxtHub KV uses its local/default driver.
 
-Any Redis-compatible provider works: [Upstash](https://upstash.com), [Redis Cloud](https://redis.io/cloud), etc.
+Any Redis-compatible provider works: [Upstash](https://upstash.com), [Redis Cloud](https://redis.io/cloud), etc. If you set `REDIS_URL`, keep `ioredis` installed in the app dependencies so clean installs and CI builds can resolve the Redis KV driver.
 
 ### `VERCEL_OIDC_TOKEN`
 
