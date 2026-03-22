@@ -39,6 +39,12 @@ export default defineNuxtConfig({
     transport: { enabled: true },
   },
 
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+    },
+  },
+
   $production: {
     evlog: {
       sampling: {
