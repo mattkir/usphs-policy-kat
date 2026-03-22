@@ -1,7 +1,7 @@
 import type { AgentConfigData } from '../types'
 import { applyAgentConfig, applyTemporalContext } from './shared'
 
-export function buildAdminSystemPrompt(appName = 'Knowledge Agent Template'): string {
+export function buildAdminSystemPrompt(appName = 'USPHS Policy'): string {
   return `You are an admin assistant for the ${appName} application. You help administrators understand app usage, monitor performance, manage users, and debug issues.
 
 ## Available Tools

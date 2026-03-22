@@ -1,12 +1,12 @@
-# Knowledge Agent Template Architecture
+# USPHS Policy Architecture
 
 > Back to [README](../README.md)
 
-This document describes the technical architecture of Knowledge Agent Template, an open-source file-system and knowledge based agent template for building AI agents with up-to-date knowledge access.
+This document describes the technical architecture of USPHS Policy — a file-system-based knowledge agent for up-to-date policy and documentation access.
 
 ## System Overview
 
-Knowledge Agent Template consists of two main components:
+USPHS Policy consists of two main components:
 
 1. **Main App** (`apps/app`): A unified [Nuxt](https://nuxt.com) application that provides the chat interface, API, bot integrations, sandbox management, and content synchronization
 2. **SDK** (`packages/sdk`): A client library providing [AI SDK](https://ai-sdk.dev)-compatible tools (`bash`, `bash_batch`)
@@ -65,7 +65,7 @@ Knowledge Agent Template consists of two main components:
 ## Project Structure
 
 ```
-knowledge-agent-template/
+usphs-policy-kat/
 ├── apps/
 │   └── app/                  # Unified Nuxt application
 │       ├── app/              # Vue app (components, pages, composables)
@@ -205,7 +205,7 @@ Blocked: `rm`, `curl`, `wget`, `git`, `ssh`, `sudo`, command substitution, redir
 
 ### 4. AI Agent (Router + Model Selection)
 
-Knowledge Agent Template uses a complexity-based router to select the appropriate model and step count for each question.
+USPHS Policy uses a complexity-based router to select the appropriate model and step count for each question.
 
 #### Router Flow
 

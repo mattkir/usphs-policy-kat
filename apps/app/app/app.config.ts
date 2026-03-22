@@ -1,10 +1,11 @@
 export default defineAppConfig({
   app: {
-    name: 'Knowledge Agent Template',
-    description: 'Open source file-system and knowledge based agent template.',
+    name: 'USPHS Policy',
+    description: 'Policy knowledge agent with file-system search over your sources.',
     icon: 'i-simple-icons-vercel',
-    repoUrl: 'https://github.com/vercel-labs/knowledge-agent-template',
-    deployUrl: 'https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=knowledge-agent&repository-name=knowledge-agent',
+    repoUrl: 'https://github.com/mattkir/usphs-policy-kat',
+    deployUrl:
+      'https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=usphs-policy&repository-name=usphs-policy-kat',
   },
   ui: {
     colors: {

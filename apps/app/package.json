@@ -2,7 +2,7 @@
   "name": "@savoir/app",
   "private": true,
   "license": "MIT",
-  "description": "Unified Nuxt app for Knowledge Agent Template (chat UI, API, bots)",
+  "description": "Unified Nuxt app for USPHS Policy (chat UI, API, bots)",
   "type": "module",
   "scripts": {
     "build": "nuxt build",

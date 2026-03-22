@@ -2,16 +2,16 @@
   "name": "@savoir/agent",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Framework-agnostic agent core for Knowledge Agent Template",
+  "description": "Framework-agnostic agent core for USPHS Policy",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vercel-labs/knowledge-agent-template.git",
+    "url": "git+https://github.com/mattkir/usphs-policy-kat.git",
     "directory": "packages/agent"
   },
   "bugs": {
-    "url": "https://github.com/vercel-labs/knowledge-agent-template/issues"
+    "url": "https://github.com/mattkir/usphs-policy-kat/issues"
   },
-  "homepage": "https://github.com/vercel-labs/knowledge-agent-template/tree/main/packages/agent#readme",
+  "homepage": "https://github.com/mattkir/usphs-policy-kat/tree/main/packages/agent#readme",
   "type": "module",
   "exports": {
     ".": {

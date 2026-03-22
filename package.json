@@ -3,14 +3,14 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "Open source file-system and knowledge based agent template",
+  "description": "USPHS Policy — knowledge agent with file-system search (@savoir monorepo)",
   "author": "HugoRCD",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vercel-labs/knowledge-agent-template.git"
+    "url": "git+https://github.com/mattkir/usphs-policy-kat.git"
   },
   "bugs": {
-    "url": "https://github.com/vercel-labs/knowledge-agent-template/issues"
+    "url": "https://github.com/mattkir/usphs-policy-kat/issues"
   },
   "workspaces": [
     "apps/*",

@@ -42,7 +42,7 @@ GitHub OAuth credentials for user login. You need a **GitHub App** (not an OAuth
    - Copy the **Client ID** → `GITHUB_CLIENT_ID`
    - Click **Generate a new client secret** → `GITHUB_CLIENT_SECRET`
 
-> See the [Getting Started guide](https://github.com/vercel-labs/knowledge-agent-template/blob/main/apps/app/app/content/docs/getting-started.md#github-app-setup) for the full GitHub App setup with bot permissions.
+> See the [Getting Started guide](https://github.com/mattkir/usphs-policy-kat/blob/main/apps/app/app/content/docs/getting-started.md#github-app-setup) for the full GitHub App setup with bot permissions.
 
 ### `NUXT_SESSION_PASSWORD` (optional)
 
@@ -62,13 +62,17 @@ On **Vercel deployments**, this is not needed — the project automatically auth
 
 ## Sandbox & Sync
 
-These control how the app syncs knowledge sources into the sandbox. All are optional — you can configure them later from the admin UI.
+These control how the app syncs knowledge sources into the sandbox. Most snapshot settings are optional and can be configured from the admin UI.
+
+**Required for snapshot sync pushes:** when the workflow commits and pushes from the Vercel sandbox to your snapshot repository, you must set `NUXT_SANDBOX_GIT_EMAIL` and `NUXT_SANDBOX_GIT_NAME` so `git` has a valid author. There are no defaults in the codebase — configure them in `.env` (local) and in your deployment environment (e.g. Vercel).
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `NUXT_GITHUB_SNAPSHOT_REPO` | — | Snapshot repository in `owner/repo` format. Configurable from admin UI. |
 | `NUXT_GITHUB_SNAPSHOT_BRANCH` | `main` | Branch to use for snapshots |
 | `NUXT_GITHUB_TOKEN` | — | Fallback PAT for git operations. Only needed if GitHub App tokens are unavailable. |
+| `NUXT_SANDBOX_GIT_EMAIL` | — | **Required** for pushes: `git config user.email` in the sandbox. Use your [GitHub noreply or verified email](https://github.com/settings/emails). |
+| `NUXT_SANDBOX_GIT_NAME` | — | **Required** for pushes: `git config user.name` in the sandbox (e.g. your display name). |
 
 ## GitHub Bot (optional)
 

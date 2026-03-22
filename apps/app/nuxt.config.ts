@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   evlog: {
     retention: '7d',
     env: {
-      service: 'knowledge-agent-template',
+      service: 'usphs-policy',
       version: '0.1.0',
     },
     routes: {

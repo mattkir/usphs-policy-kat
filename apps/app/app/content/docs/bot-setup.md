@@ -1,6 +1,6 @@
 # GitHub Bot Setup
 
-The Knowledge Agent Template GitHub bot responds to mentions in GitHub issues, using your knowledge base to provide answers directly in the conversation.
+The USPHS Policy GitHub bot responds to mentions in GitHub issues, using your knowledge base to provide answers directly in the conversation.
 
 > If you haven't created your GitHub App yet, follow the [GitHub App Setup](/admin/docs/getting-started#github-app-setup) in the Getting Started guide first. The same app handles both OAuth login and the bot.
 
@@ -87,4 +87,4 @@ When enabled, the bot will respond to every new issue opened in repositories whe
 
 The bot is built on the [Vercel Chat SDK](https://github.com/vercel-labs/chat) with a custom GitHub adapter. It uses the [Octokit](https://github.com/octokit/rest.js) library with [GitHub App authentication](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/about-authentication-with-a-github-app) to interact with the GitHub API.
 
-Each response goes through the same AI agent pipeline as the chat interface, using [Vercel AI SDK](https://ai-sdk.dev) tools to search the knowledge base in a [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox). For the full architecture, see the [Architecture documentation](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/ARCHITECTURE.md) on GitHub. To build your own adapter, see the [Customization Guide](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/CUSTOMIZATION.md#4-add-a-bot-adapter).
+Each response goes through the same AI agent pipeline as the chat interface, using [Vercel AI SDK](https://ai-sdk.dev) tools to search the knowledge base in a [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox). For the full architecture, see the [Architecture documentation](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/ARCHITECTURE.md) on GitHub. To build your own adapter, see the [Customization Guide](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/CUSTOMIZATION.md#4-add-a-bot-adapter).

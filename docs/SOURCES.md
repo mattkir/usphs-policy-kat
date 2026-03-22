@@ -2,7 +2,7 @@
 
 > Back to [README](../README.md) | See also: [Customization](./CUSTOMIZATION.md), [Architecture](./ARCHITECTURE.md)
 
-Knowledge Agent Template aggregates content from multiple sources into a unified, searchable knowledge base. A source is anything that produces files — GitHub repos, YouTube transcripts, and any custom source you build. Everything ends up as files in a sandbox, and the AI agent searches across all of them.
+USPHS Policy aggregates content from multiple sources into a unified, searchable knowledge base. A source is anything that produces files — GitHub repos, YouTube transcripts, and any custom source you build. Everything ends up as files in a sandbox, and the AI agent searches across all of them.
 
 The system is designed to be extensible. Built-in source types handle GitHub and YouTube, but the architecture supports any source that can output files: Reddit threads, Slack exports, RSS feeds, custom APIs, static markdown — anything.
 

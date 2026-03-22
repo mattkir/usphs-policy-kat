@@ -1,6 +1,6 @@
 # Add Bot Adapter
 
-Guide for adding a new platform adapter (Slack, Linear, etc.) to the Knowledge Agent Template bot system.
+Guide for adding a new platform adapter (Slack, Linear, etc.) to the USPHS Policy bot system.
 
 ## Architecture
 

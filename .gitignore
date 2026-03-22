@@ -32,3 +32,11 @@ node_modules
 apps/app/.data
 .vercel
 .env*.local
+
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc
+
+# Local CCMIS PDF downloads (not for version control)
+downloads/ccmis/
+

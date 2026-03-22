@@ -36,7 +36,7 @@ cp apps/app/.env.example apps/app/.env
 
 ## GitHub App Setup
 
-Knowledge Agent Template uses a single **GitHub App** for both **user authentication** (OAuth login) and the **GitHub bot** (webhook events). This avoids creating two separate apps.
+USPHS Policy uses a single **GitHub App** for both **user authentication** (OAuth login) and the **GitHub bot** (webhook events). This avoids creating two separate apps.
 
 1. Go to [**GitHub Settings > Developer settings > GitHub Apps > New GitHub App**](https://github.com/settings/apps/new)
 2. Fill in the basic information:
@@ -135,7 +135,7 @@ The app will be available at `http://localhost:3000`. The first user to sign up 
 
 ## Adding Sources
 
-Sources define the knowledge base the app uses to answer questions. They are managed through the **admin interface**. Sources aren't limited to documentation — you can add any content that produces files (GitHub repos, YouTube transcripts, custom APIs). See the [Sources documentation](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/SOURCES.md) for all available options.
+Sources define the knowledge base the app uses to answer questions. They are managed through the **admin interface**. Sources aren't limited to documentation — you can add any content that produces files (GitHub repos, YouTube transcripts, custom APIs). See the [Sources documentation](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/SOURCES.md) for all available options.
 
 1. Navigate to the admin panel at `/admin`
 2. Go to the Sources section
@@ -152,18 +152,18 @@ After adding or updating sources, trigger a sync from the admin interface. The s
 4. Pushes changes to the snapshot repository
 5. Takes a new sandbox snapshot for instant startup
 
-> **Note:** Only documentation files are synced. Source code (`.ts`, `.js`, `.vue`, etc.), images, and binaries are automatically excluded. See the [Sources documentation](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/SOURCES.md#content-normalization) for details.
+> **Note:** Only documentation files are synced. Source code (`.ts`, `.js`, `.vue`, etc.), images, and binaries are automatically excluded. See the [Sources documentation](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/SOURCES.md#content-normalization) for details.
 
 ## How It Works
 
-Knowledge Agent Template uses a **file-based search** approach -- no embeddings or vector databases:
+USPHS Policy uses a **file-based search** approach -- no embeddings or vector databases:
 
 1. Documentation from all sources is aggregated into a single snapshot repository
 2. When a user asks a question, a [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) is created from the snapshot
 3. The AI agent uses `bash` and `bash_batch` tools (via the [AI SDK](https://ai-sdk.dev)) to run `grep`, `find`, `cat`, etc. in the sandbox
 4. Results are synthesized into a natural language answer with citations
 
-You can also integrate the app into your own applications using the [SDK](/admin/docs/sdk). For the full technical architecture, see the [Architecture documentation](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/ARCHITECTURE.md) on GitHub.
+You can also integrate the app into your own applications using the [SDK](/admin/docs/sdk). For the full technical architecture, see the [Architecture documentation](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/ARCHITECTURE.md) on GitHub.
 
 ## Admin Panel
 
@@ -177,7 +177,7 @@ The admin panel at `/admin` provides:
 
 ## Tech Stack
 
-Knowledge Agent Template is built on:
+USPHS Policy is built on:
 
 - [Nuxt](https://nuxt.com) -- full-stack Vue framework
 - [NuxtHub](https://hub.nuxt.com) -- database (SQLite), KV storage, and blob storage

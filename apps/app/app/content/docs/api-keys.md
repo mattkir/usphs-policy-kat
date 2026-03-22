@@ -1,6 +1,6 @@
 # API Keys
 
-API keys allow external services to authenticate with Knowledge Agent Template without a browser session. They use [Better Auth](https://www.better-auth.com)'s [API key plugin](https://www.better-auth.com/docs/plugins/api-key) to create a virtual session tied to the key owner.
+API keys allow external services to authenticate with USPHS Policy without a browser session. They use [Better Auth](https://www.better-auth.com)'s [API key plugin](https://www.better-auth.com/docs/plugins/api-key) to create a virtual session tied to the key owner.
 
 ## Admin Keys
 

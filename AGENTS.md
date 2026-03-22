@@ -1,4 +1,4 @@
-# Knowledge Agent Template
+# USPHS Policy
 
 AI agents with real-time knowledge base access.
 
@@ -16,7 +16,7 @@ AI agents with real-time knowledge base access.
 ## Structure
 
 ```
-knowledge-agent-template/
+usphs-policy-kat/
 ├── apps/app/          # Nuxt app (chat UI + API + bots)
 │   ├── app/            # Vue components, pages
 │   └── server/         # API, workflows, sandbox, bot adapters
@@ -41,4 +41,4 @@ Project-specific guides for AI-assisted customization. When the user asks to add
 | Add Tool | `add-tool.md` | Adding a new AI SDK tool |
 | Add Source | `add-source.md` | Adding a GitHub/YouTube knowledge source |
 | Add Bot Adapter | `add-bot-adapter.md` | Adding a new platform (Slack, Linear, etc.) |
-| Rename Project | `rename-project.md` | Renaming the project from "Knowledge Agent Template" |
+| Rename Project | `rename-project.md` | Renaming the product, packages, and docs (full migration) |

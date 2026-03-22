@@ -19,6 +19,14 @@ export interface GitPushResult {
   hasChanges: boolean
 }
 
+/** Author for snapshot-repo commits: set `NUXT_SANDBOX_GIT_EMAIL` and `NUXT_SANDBOX_GIT_NAME` (no in-repo defaults). */
+function defaultSandboxGitConfig(): GitConfig {
+  return {
+    email: process.env.NUXT_SANDBOX_GIT_EMAIL?.trim() ?? '',
+    name: process.env.NUXT_SANDBOX_GIT_NAME?.trim() ?? '',
+  }
+}
+
 /** Sets git user email and name in sandbox */
 export async function configureGit(sandbox: Sandbox, config: GitConfig): Promise<void> {
   await sandbox.runCommand({
@@ -125,10 +133,23 @@ export function generateCommitMessage(results: SyncSourceResult[]): string {
 export async function pushChanges(
   sandbox: Sandbox,
   options: GitPushOptions,
-  gitConfig: GitConfig = { email: 'bot@vercel.com', name: 'Knowledge Agent Bot' },
+  gitConfig: GitConfig = defaultSandboxGitConfig(),
 ): Promise<GitPushResult> {
+  const email = gitConfig.email.trim()
+  const name = gitConfig.name.trim()
+  if (!email || !name) {
+    return {
+      success: false,
+      hasChanges: false,
+      error:
+        'Sandbox git identity is not configured. Set NUXT_SANDBOX_GIT_EMAIL and NUXT_SANDBOX_GIT_NAME (see docs/ENVIRONMENT.md).',
+    }
+  }
+
+  const resolved: GitConfig = { email, name }
+
   try {
-    await configureGit(sandbox, gitConfig)
+    await configureGit(sandbox, resolved)
     await checkoutBranch(sandbox, options.branch)
 
     const changesExist = await hasChanges(sandbox)

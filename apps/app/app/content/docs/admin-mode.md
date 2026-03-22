@@ -57,7 +57,7 @@ Here are some things you can ask in admin mode:
 
 ## Structured Logging with evlog
 
-Knowledge Agent Template uses [`@evlog/nuxthub`](https://github.com/HugoRCD/evlog) for structured logging. Every API request, bot interaction, and workflow execution is automatically logged to the `evlog_events` table in your [NuxtHub](https://hub.nuxt.com) database.
+USPHS Policy uses [`@evlog/nuxthub`](https://github.com/HugoRCD/evlog) for structured logging. Every API request, bot interaction, and workflow execution is automatically logged to the `evlog_events` table in your [NuxtHub](https://hub.nuxt.com) database.
 
 This means:
 
@@ -78,4 +78,4 @@ Admin mode uses a completely separate AI pipeline from the regular chat:
 
 Admin chats are stored like regular chats but tagged with `mode: 'admin'` in the database.
 
-For a deeper look at the architecture behind admin mode and other components, see the [Architecture documentation](https://github.com/vercel-labs/knowledge-agent-template/blob/main/docs/ARCHITECTURE.md) on GitHub.
+For a deeper look at the architecture behind admin mode and other components, see the [Architecture documentation](https://github.com/mattkir/usphs-policy-kat/blob/main/docs/ARCHITECTURE.md) on GitHub.

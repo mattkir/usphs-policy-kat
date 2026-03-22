@@ -1,25 +1,25 @@
-<img src="./assets/banner.jpg" width="100%" alt="Knowledge Agent Template banner" />
+<img src="./assets/banner.jpg" width="100%" alt="USPHS Policy banner" />
 
 <p align="center">
   <br>
-  <b>Knowledge Agent Template</b>
+  <b>USPHS Policy</b>
   <br>
-  <i>Open source file-system and knowledge based agent template.</i>
+  <i>Policy knowledge agent with file-system search over your sources.</i>
   <br>
   <br>
 </p>
 
 <p align="center">
-  <b>Template.</b> Fork it, customize it, and deploy your own file-system based AI agent.
+  Built on the open-source knowledge-agent stack — deploy chat, GitHub bot, and Discord from one codebase.
 </p>
 
 <p align="center">
-  <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=knowledge-agent&repository-name=knowledge-agent"><img src="https://vercel.com/button" alt="Deploy with Vercel" /></a>
+  <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=usphs-policy&repository-name=usphs-policy-kat"><img src="https://vercel.com/button" alt="Deploy with Vercel" /></a>
 </p>
 
 ---
 
-Open source file-system and knowledge based agent template. Build AI agents that stay up to date with your knowledge base — grep, find, and cat across your sources, no embeddings, no vector DB. Plug any source (GitHub repos, YouTube transcripts, custom APIs) and deploy as a chat app, a GitHub bot, a Discord bot, or all at once.
+USPHS Policy helps teams query policy and documentation with AI: grep, find, and cat across your sources — no embeddings, no vector DB. Plug any source (GitHub repos, YouTube transcripts, custom APIs) and deploy as a chat app, a GitHub bot, a Discord bot, or all at once.
 
 ## Features
 
@@ -120,14 +120,14 @@ console.log(text)
 
 ### Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fvercel-labs%2Fknowledge-agent-template%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=knowledge-agent&repository-name=knowledge-agent)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat&env=BETTER_AUTH_SECRET,GITHUB_CLIENT_ID,GITHUB_CLIENT_SECRET&envDescription=BETTER_AUTH_SECRET%3A%20run%20openssl%20rand%20-hex%2032%20%7C%20GITHUB_CLIENT_ID%20%2B%20SECRET%3A%20create%20a%20GitHub%20App%20at%20github.com%2Fsettings%2Fapps%2Fnew&envLink=https%3A%2F%2Fgithub.com%2Fmattkir%2Fusphs-policy-kat%2Fblob%2Fmain%2Fdocs%2FENVIRONMENT.md&project-name=usphs-policy&repository-name=usphs-policy-kat)
 
 ### Self-hosting
 
 ```bash
 # Clone the repository
-git clone https://github.com/vercel-labs/knowledge-agent-template.git
-cd knowledge-agent-template
+git clone https://github.com/mattkir/usphs-policy-kat.git
+cd usphs-policy-kat
 
 # Install dependencies
 bun install
@@ -161,7 +161,7 @@ See [ENVIRONMENT.md](./docs/ENVIRONMENT.md) for the full list of environment var
 
 ## Customization
 
-Knowledge Agent Template is designed as a **reusable template**. See the [Customization Guide](./docs/CUSTOMIZATION.md) for how to:
+See the [Customization Guide](./docs/CUSTOMIZATION.md) for how to:
 
 - Rename your instance (name, icon, description)
 - Add [content sources](./docs/SOURCES.md) (GitHub repos, YouTube channels, custom)
@@ -193,7 +193,7 @@ See [SOURCES.md](./docs/SOURCES.md) for detailed source configuration options.
 
 ## Bots
 
-Knowledge Agent Template includes built-in bot integrations powered by the [Vercel Chat SDK](https://github.com/vercel-labs/chat):
+USPHS Policy includes built-in bot integrations powered by the [Vercel Chat SDK](https://github.com/vercel-labs/chat):
 
 - **GitHub Bot**: Responds to mentions in GitHub issues and PRs. Uses a [GitHub App](https://docs.github.com/en/apps) for authentication and webhooks.
 - **Discord Bot**: Responds to mentions and continues conversations in threads. Uses the [Discord API](https://discord.com/developers/docs).

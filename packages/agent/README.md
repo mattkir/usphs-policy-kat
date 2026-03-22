@@ -1,6 +1,6 @@
 # @savoir/agent
 
-Framework-agnostic agent core for Knowledge Agent Template. Handles question routing, prompt management, agent creation, and AI tool definitions.
+Framework-agnostic agent core for USPHS Policy. Handles question routing, prompt management, agent creation, and AI tool definitions.
 
 > See also: [Main README](../../README.md), [Architecture](../../docs/ARCHITECTURE.md), [Customization](../../docs/CUSTOMIZATION.md)
 
