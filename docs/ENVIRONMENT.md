@@ -16,7 +16,7 @@ cp apps/app/.env.example apps/app/.env
 | `GITHUB_CLIENT_ID` | From your [GitHub App settings](https://github.com/settings/apps) → Client ID |
 | `GITHUB_CLIENT_SECRET` | From your [GitHub App settings](https://github.com/settings/apps) → Generate a client secret |
 
-For Vercel production, you also need a PostgreSQL connection via `POSTGRES_URL`, `POSTGRESQL_URL`, or `DATABASE_URL` (Vercel Postgres recommended). Legacy project-prefixed names such as `usphs_policy_POSTGRES_URL` and `usphs_policy_DATABASE_URL` are accepted only as a temporary compatibility fallback during migration. For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
+For Vercel production, you also need a PostgreSQL connection via `POSTGRES_URL` or `DATABASE_URL`. Paste the raw Neon connection string into Vercel with no wrapping quotes. For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
 
 ## Authentication
 
@@ -132,19 +132,20 @@ To get one manually: [Vercel Dashboard](https://vercel.com) → your project →
 
 ## State (optional)
 
-### `POSTGRES_URL` / `POSTGRESQL_URL` / `DATABASE_URL`
+### `POSTGRES_URL` / `DATABASE_URL`
 
 Production deployments require a PostgreSQL connection URL. The app uses NuxtHub with `hub.db: 'postgresql'`, and on Vercel production it now explicitly requires a network Postgres driver instead of silently falling back to local `pglite` storage.
 
 Recommended setup:
 
-1. Attach a [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) database to the project
-2. Confirm Vercel injects `POSTGRES_URL` or `DATABASE_URL` into the production environment
-3. Redeploy so NuxtHub resolves the production database driver to `postgres-js`
+1. Connect Neon or [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) to the project
+2. Confirm Vercel sets `POSTGRES_URL` or `DATABASE_URL` in the target environment
+3. Paste the value exactly as provided by Neon or Vercel Storage, with no surrounding quotes
+4. Redeploy so NuxtHub resolves the production database driver to `postgres-js`
 
 If none of these variables are present in Vercel production, startup will fail fast with a configuration error instead of trying to write to `.data/db/pglite`.
 
-Legacy note: some older Vercel setups in this repo used project-prefixed variables such as `usphs_policy_POSTGRES_URL` and `usphs_policy_DATABASE_URL`. The app still accepts those names temporarily, and `turbo.json` still forwards them during builds, but the intended long-term configuration is to standardize on unprefixed `POSTGRES_URL` or `DATABASE_URL` in Vercel.
+If your Vercel build fails with `ParseError: Unterminated string constant` while NuxtHub is loading `@nuxthub/db/db.mjs`, the configured connection value is malformed for NuxtHub code generation. Re-copy the raw connection string from Neon or the Vercel Storage UI, update `POSTGRES_URL` or `DATABASE_URL`, and redeploy. If the regenerated URL still contains a single quote in the password, rotate the database credentials and use the new connection string.
 
 ### `REDIS_URL`
 

@@ -1,22 +1,13 @@
 import type {} from '../../bun-test'
-import { getDatabaseVersion, resolvePostgresUrl } from './version.get'
+import { assertNuxtHubSafePostgresUrl, resolvePostgresUrl } from '../../shared/utils/postgres'
+import { getDatabaseVersion } from './version.get'
 
 describe('resolvePostgresUrl', () => {
-  it('prefers POSTGRES_URL over the other database env vars', () => {
+  it('prefers POSTGRES_URL over DATABASE_URL', () => {
     expect(resolvePostgresUrl({
       POSTGRES_URL: 'postgres://primary',
-      POSTGRESQL_URL: 'postgres://secondary',
       DATABASE_URL: 'postgres://tertiary',
-      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
-      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
     })).toBe('postgres://primary')
-  })
-
-  it('falls back to POSTGRESQL_URL when POSTGRES_URL is missing', () => {
-    expect(resolvePostgresUrl({
-      POSTGRESQL_URL: 'postgres://secondary',
-      DATABASE_URL: 'postgres://tertiary',
-    })).toBe('postgres://secondary')
   })
 
   it('falls back to DATABASE_URL when it is the only configured database env var', () => {
@@ -25,29 +16,44 @@ describe('resolvePostgresUrl', () => {
     })).toBe('postgres://tertiary')
   })
 
-  it('falls back to the legacy prefixed POSTGRES_URL when standard env vars are missing', () => {
-    expect(resolvePostgresUrl({
-      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
-      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
-    })).toBe('postgres://legacy-primary')
-  })
-
-  it('falls back to the legacy prefixed DATABASE_URL when it is the only configured database env var', () => {
-    expect(resolvePostgresUrl({
-      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
-    })).toBe('postgres://legacy-secondary')
-  })
-
-  it('prefers standard env vars over legacy prefixed env vars', () => {
-    expect(resolvePostgresUrl({
-      DATABASE_URL: 'postgres://tertiary',
-      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
-      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
-    })).toBe('postgres://tertiary')
-  })
-
   it('returns an empty string when no supported database env vars are configured', () => {
     expect(resolvePostgresUrl({})).toBe('')
+  })
+})
+
+describe('assertNuxtHubSafePostgresUrl', () => {
+  it('allows a raw postgres connection string', () => {
+    assertNuxtHubSafePostgresUrl('postgres://primary')
+  })
+
+  it('rejects connection strings wrapped in quotes', () => {
+    const error = (() => {
+      try {
+        assertNuxtHubSafePostgresUrl('"postgres://primary"')
+      } catch (thrownError) {
+        return thrownError
+      }
+      return null
+    })()
+
+    expect(error instanceof Error ? error.message : error).toBe(
+      'PostgreSQL connection values must be pasted into Vercel without wrapping quotes. Set POSTGRES_URL or DATABASE_URL to the raw Neon connection string.'
+    )
+  })
+
+  it('rejects connection strings with characters that break NuxtHub code generation', () => {
+    const error = (() => {
+      try {
+        assertNuxtHubSafePostgresUrl('postgres://pa\'ss@host/db')
+      } catch (thrownError) {
+        return thrownError
+      }
+      return null
+    })()
+
+    expect(error instanceof Error ? error.message : error).toBe(
+      'POSTGRES_URL or DATABASE_URL contains characters that break NuxtHub database code generation. Regenerate the Neon connection string, rotate credentials if needed, and paste the raw value into Vercel.'
+    )
   })
 })
 
@@ -63,19 +69,6 @@ describe('getDatabaseVersion', () => {
     })
 
     expect(result).toEqual({ version: 'PostgreSQL 16.2' })
-  })
-
-  it('returns the database version for an admin request using POSTGRESQL_URL', async () => {
-    const result = await getDatabaseVersion({
-      env: { POSTGRESQL_URL: 'postgres://secondary' },
-      requireAdminFn: () => Promise.resolve(undefined),
-      createSql: (url) => {
-        expect(url).toBe('postgres://secondary')
-        return () => Promise.resolve([{ version: 'PostgreSQL 16.3' }])
-      },
-    })
-
-    expect(result).toEqual({ version: 'PostgreSQL 16.3' })
   })
 
   it('returns the database version for an admin request using DATABASE_URL', async () => {

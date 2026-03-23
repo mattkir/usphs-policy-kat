@@ -1,4 +1,4 @@
-import { resolvePostgresUrl } from './shared/utils/postgres'
+import { assertNuxtHubSafePostgresUrl, resolvePostgresUrl } from './shared/utils/postgres'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const postgresUrl = resolvePostgresUrl(process.env)
@@ -6,9 +6,11 @@ const isVercelProduction = process.env.VERCEL === '1' && process.env.VERCEL_ENV 
 
 if (isVercelProduction && !postgresUrl) {
   throw new Error(
-    'Production PostgreSQL is required on Vercel. Attach Vercel Postgres or set POSTGRES_URL, POSTGRESQL_URL, or DATABASE_URL.'
+    'Production PostgreSQL is required on Vercel. Connect Neon or Vercel Postgres and set POSTGRES_URL or DATABASE_URL.'
   )
 }
+
+assertNuxtHubSafePostgresUrl(postgresUrl)
 
 const hubDatabase = postgresUrl
   ? {

@@ -32,7 +32,7 @@ node_modules
 apps/app/.data
 .vercel
 .env*.local
-
+.env.development.local
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc

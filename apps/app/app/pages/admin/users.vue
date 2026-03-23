@@ -31,7 +31,9 @@ const pagination = ref({ pageIndex: 0, pageSize: 10 })
 
 const deleteModalOpen = computed({
   get: () => userToDelete.value !== null,
-  set: (v: boolean) => { if (!v) userToDelete.value = null },
+  set: (v: boolean) => {
+    if (!v) userToDelete.value = null 
+  },
 })
 
 const columns: TableColumn<AdminUserRow>[] = [
@@ -113,12 +115,18 @@ function isCurrentUser(userId: string): boolean {
 
 function getRowActions(row: AdminUserRow) {
   if (isCurrentUser(row.id)) return []
-  return [[{
-    label: 'Delete user',
-    icon: 'i-lucide-trash-2',
-    color: 'error' as const,
-    onSelect: () => { userToDelete.value = row },
-  }]]
+  return [
+    [
+      {
+        label: 'Delete user',
+        icon: 'i-lucide-trash-2',
+        color: 'error' as const,
+        onSelect: () => {
+          userToDelete.value = row 
+        },
+      }
+    ]
+  ]
 }
 
 async function deleteUser() {
@@ -245,12 +253,12 @@ async function changeRole(row: AdminUserRow, newRole: UserRole) {
       />
 
       <UTable
-        :data="users ?? []"
-        :columns="columns"
-        :loading="status === 'pending' && !users"
         v-model:global-filter="globalFilter"
         v-model:sorting="sorting"
         v-model:pagination="pagination"
+        :data="users ?? []"
+        :columns
+        :loading="status === 'pending' && !users"
       >
         <template #name-cell="{ row }">
           <div class="flex items-center gap-2.5 min-w-0">
