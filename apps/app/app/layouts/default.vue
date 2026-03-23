@@ -5,7 +5,9 @@ import type { GetChatsResponse, UIChat } from '#shared/types/chat'
 const route = useRoute()
 const toast = useToast()
 const overlay = useOverlay()
-const { loggedIn } = useUserSession()
+const loggedIn = import.meta.client
+  ? useUserSession().loggedIn
+  : computed(() => false)
 
 const open = ref(false)
 

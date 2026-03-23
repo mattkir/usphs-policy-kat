@@ -138,6 +138,12 @@ Redis connection URL for stateful features. When set, the app uses Redis for bot
 
 Any Redis-compatible provider works: [Upstash](https://upstash.com), [Redis Cloud](https://redis.io/cloud), etc. If you set `REDIS_URL`, keep `ioredis` installed in the app dependencies so clean installs and CI builds can resolve the Redis KV driver.
 
+### `EVLOG_TRANSPORT_ENABLED`
+
+Optional. Set to `true` to persist structured `evlog` events through the `@evlog/nuxthub` drain in production.
+
+By default this is left unset in production so request handling fails open if log storage is slow or unavailable.
+
 ### `VERCEL_OIDC_TOKEN`
 
 Auto-injected in Vercel deployments. No action needed.

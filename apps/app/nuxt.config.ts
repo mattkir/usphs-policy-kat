@@ -36,7 +36,11 @@ export default defineNuxtConfig({
       '/api/sandbox/**': { service: 'sandbox-api' },
       '/api/stats/**': { service: 'stats-api' },
     },
-    transport: { enabled: true },
+    transport: {
+      // Fail open in production unless explicitly re-enabled. A blocked log drain
+      // should never take down public request handling.
+      enabled: process.env.NODE_ENV !== 'production' || process.env.EVLOG_TRANSPORT_ENABLED === 'true',
+    },
   },
 
   vite: {

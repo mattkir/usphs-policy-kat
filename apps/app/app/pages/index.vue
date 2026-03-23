@@ -4,7 +4,9 @@ useSeoMeta({ title: 'New chat' })
 const input = ref('')
 const loading = ref(false)
 const chatId = crypto.randomUUID()
-const { loggedIn } = useUserSession()
+const loggedIn = import.meta.client
+  ? useUserSession().loggedIn
+  : computed(() => false)
 
 const { model } = useModels()
 const { mode } = useChatMode()
