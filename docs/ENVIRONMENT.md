@@ -16,7 +16,7 @@ cp apps/app/.env.example apps/app/.env
 | `GITHUB_CLIENT_ID` | From your [GitHub App settings](https://github.com/settings/apps) → Client ID |
 | `GITHUB_CLIENT_SECRET` | From your [GitHub App settings](https://github.com/settings/apps) → Generate a client secret |
 
-These three variables are all you need to deploy to Vercel. For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
+For Vercel production, you also need a PostgreSQL connection via `POSTGRES_URL`, `POSTGRESQL_URL`, or `DATABASE_URL` (Vercel Postgres recommended). For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
 
 ## Authentication
 
@@ -131,6 +131,18 @@ Required only if syncing YouTube sources (video transcripts).
 To get one manually: [Vercel Dashboard](https://vercel.com) → your project → **Storage** → **Blob** → **Connect** → copy the token.
 
 ## State (optional)
+
+### `POSTGRES_URL` / `POSTGRESQL_URL` / `DATABASE_URL`
+
+Production deployments require a PostgreSQL connection URL. The app uses NuxtHub with `hub.db: 'postgresql'`, and on Vercel production it now explicitly requires a network Postgres driver instead of silently falling back to local `pglite` storage.
+
+Recommended setup:
+
+1. Attach a [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) database to the project
+2. Confirm Vercel injects `POSTGRES_URL` or `DATABASE_URL` into the production environment
+3. Redeploy so NuxtHub resolves the production database driver to `postgres-js`
+
+If none of these variables are present in Vercel production, startup will fail fast with a configuration error instead of trying to write to `.data/db/pglite`.
 
 ### `REDIS_URL`
 

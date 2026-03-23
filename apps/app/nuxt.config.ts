@@ -1,4 +1,25 @@
+import { resolvePostgresUrl } from './shared/utils/postgres'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const postgresUrl = resolvePostgresUrl(process.env)
+const isVercelProduction = process.env.VERCEL === '1' && process.env.VERCEL_ENV === 'production'
+
+if (isVercelProduction && !postgresUrl) {
+  throw new Error(
+    'Production PostgreSQL is required on Vercel. Attach Vercel Postgres or set POSTGRES_URL, POSTGRESQL_URL, or DATABASE_URL.'
+  )
+}
+
+const hubDatabase = postgresUrl
+  ? {
+    dialect: 'postgresql' as const,
+    driver: 'postgres-js' as const,
+    connection: {
+      url: postgresUrl,
+    },
+  }
+  : 'postgresql'
+
 export default defineNuxtConfig({
   extends: ['../../packages/github'],
 
@@ -118,7 +139,7 @@ export default defineNuxtConfig({
   },
 
   hub: {
-    db: 'postgresql',
+    db: hubDatabase,
     kv: true,
     blob: true,
     cache: true
@@ -128,6 +149,7 @@ export default defineNuxtConfig({
     '/shared/**': { isr: { expiration: 300 } },
     '/api/auth/**': { isr: false, cache: false },
     '/api/chats/**': { isr: false, cache: false },
+    '/api/version': { isr: false, cache: false },
     '/api/webhooks/**': { isr: false, cache: false },
     '/admin/docs/**': { isr: { expiration: false } },
     '/admin/**': { auth: { user: { role: 'admin' } as any } },
