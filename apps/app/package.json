@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "NUXT_TELEMETRY_DISABLED=1 nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.45",
     "@ai-sdk/vue": "^3.0.85",
-    "@better-auth/api-key": "^1.5.1",
+    "@better-auth/api-key": "1.5.0",
     "@chat-adapter/discord": "^4.13.0",
     "@chat-adapter/state-memory": "^4.13.0",
     "@chat-adapter/state-redis": "^4.13.0",
@@ -46,7 +46,7 @@
     "@vercel/functions": "^3.4.1",
     "@vercel/sandbox": "^1.4.1",
     "ai": "^6.0.85",
-    "better-auth": "1.5.1",
+    "better-auth": "1.5.0",
     "chat": "^4.13.0",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",

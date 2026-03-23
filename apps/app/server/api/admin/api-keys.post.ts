@@ -12,7 +12,17 @@ export default defineEventHandler(async (event) => {
   requestLog.set({ adminUserId: user.id, keyName: body.name || 'Admin key' })
 
   const auth = serverAuth(event)
-  const result = await auth.api.createApiKey({
+  const api = auth.api as typeof auth.api & {
+    createApiKey: (input: {
+      body: {
+        name: string
+        prefix: string
+        userId: string
+      }
+    }) => Promise<unknown>
+  }
+
+  const result = await api.createApiKey({
     body: {
       name: body.name || 'Admin key',
       prefix: 'sk',

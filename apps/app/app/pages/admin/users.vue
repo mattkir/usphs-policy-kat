@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { getPaginationRowModel, getSortedRowModel } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 
 useSeoMeta({ title: 'Users - Admin' })
@@ -22,7 +21,6 @@ const toast = useToast()
 const { showError } = useErrorToast()
 const { user: currentUser } = useUserSession()
 
-const table = useTemplateRef('table')
 const savingUserId = ref<string | null>(null)
 const deletingUserId = ref<string | null>(null)
 const userToDelete = ref<AdminUserRow | null>(null)
@@ -84,13 +82,25 @@ const totalUsers = computed(() => users.value?.length ?? 0)
 const adminCount = computed(() => users.value?.filter(u => u.role === 'admin').length ?? 0)
 const activeCount = computed(() => users.value?.filter(u => u.lastSeenAt !== null).length ?? 0)
 
-const filteredRowCount = computed(() =>
-  table.value?.tableApi?.getFilteredRowModel().rows.length ?? 0,
+function matchesGlobalFilter(row: AdminUserRow, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+
+  const name = row.name?.toLowerCase() ?? ''
+  const email = row.email?.toLowerCase() ?? ''
+  return name.includes(q) || email.includes(q)
+}
+
+const filteredUsers = computed<AdminUserRow[]>(() =>
+  (users.value ?? []).filter(user => matchesGlobalFilter(user, globalFilter.value)),
 )
 
-const pageCount = computed(() =>
-  table.value?.tableApi?.getPageCount() ?? 0,
-)
+const filteredRowCount = computed<number>(() => filteredUsers.value.length)
+
+const pageCount = computed<number>(() => {
+  const size = pagination.value.pageSize || 1
+  return Math.max(1, Math.ceil(filteredRowCount.value / size))
+})
 
 function formatDate(date: string | null): string {
   if (!date) return 'Never'
@@ -235,16 +245,12 @@ async function changeRole(row: AdminUserRow, newRole: UserRole) {
       />
 
       <UTable
-        ref="table"
         :data="users ?? []"
         :columns="columns"
         :loading="status === 'pending' && !users"
         v-model:global-filter="globalFilter"
-        :global-filter-options="{ filterFn: 'custom' }"
         v-model:sorting="sorting"
-        :sorting-options="{ getSortedRowModel: getSortedRowModel() }"
         v-model:pagination="pagination"
-        :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
       >
         <template #name-cell="{ row }">
           <div class="flex items-center gap-2.5 min-w-0">
