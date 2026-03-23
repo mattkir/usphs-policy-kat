@@ -185,7 +185,7 @@ See [SOURCES.md](./docs/SOURCES.md) for detailed source configuration options.
 
 > For the full technical deep-dive, see [Architecture](./docs/ARCHITECTURE.md).
 
-1. **Sources in Database**: Sources are stored in SQLite via [NuxtHub](https://hub.nuxt.com), managed through the admin interface
+1. **Sources in Database**: Sources are stored in **PostgreSQL** via [NuxtHub](https://hub.nuxt.com), managed through the admin interface
 2. **Content Aggregation**: Sources (GitHub repos, YouTube transcripts, custom APIs, etc.) are synced to a snapshot repository via [Vercel Workflow](https://useworkflow.dev)
 3. **Sandbox Creation**: When an agent needs to search, the API creates/recovers a [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) with the snapshot repo cloned
 4. **File-based Search**: The SDK `bash` and `bash_batch` tools execute grep/find/cat commands in the sandbox to search and read content

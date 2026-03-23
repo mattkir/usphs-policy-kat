@@ -42,3 +42,4 @@ Project-specific guides for AI-assisted customization. When the user asks to add
 | Add Source | `add-source.md` | Adding a GitHub/YouTube knowledge source |
 | Add Bot Adapter | `add-bot-adapter.md` | Adding a new platform (Slack, Linear, etc.) |
 | Rename Project | `rename-project.md` | Renaming the product, packages, and docs (full migration) |
+| Debug Vercel deployment | `debug-vercel-deployment.md` | Vercel build/runtime failures, crons, monorepo or NuxtHub issues |

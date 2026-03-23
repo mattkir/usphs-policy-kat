@@ -156,11 +156,33 @@ See the [Nuxt UI documentation](https://ui.nuxt.com) for all theming options. Fo
 
 ## 7. Deploy
 
-This project is designed to be deployed on [Vercel](https://vercel.com):
+This project is designed to be deployed on [Vercel](https://vercel.com).
 
-1. Connect your repository to Vercel
-2. Set all required environment variables (see [ENVIRONMENT.md](./ENVIRONMENT.md))
-3. Deploy
+### Monorepo layout
 
-Vercel provides the full feature set: [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) for code execution, [Vercel Workflow](https://useworkflow.dev) for content sync, and serverless functions for bot webhooks.
+The repo root is a [Bun](https://bun.sh) + [Turborepo](https://turbo.build) workspace. Workspace packages under `packages/*` must build before the Nuxt app (`prepare` runs `turbo run build --filter='./packages/*'` on `bun install`).
+
+**Pick one Root Directory strategy** (Vercel → Project → Settings → General):
+
+| Root Directory | Install Command | Build Command | `vercel.json` |
+|------------------|-----------------|---------------|---------------|
+| **Repository root** (`.`) | `bun install` | `bunx turbo run build --filter=@savoir/app` | Put a `vercel.json` at the **repo root** if you need [crons](https://vercel.com/docs/cron-jobs) — the app ships [`apps/app/vercel.json`](../apps/app/vercel.json) only; Vercel reads `vercel.json` from the configured Root Directory. |
+| **`apps/app`** | `cd ../.. && bun install` (or set via monorepo docs) | `bun run build` | The existing [`apps/app/vercel.json`](../apps/app/vercel.json) applies (Discord gateway + evlog cleanup crons). |
+
+If Root Directory is the repo root and you do not add a root `vercel.json`, **scheduled crons defined in `apps/app/vercel.json` will not run** unless you duplicate or relocate that config.
+
+Framework preset: **Nuxt.js** (or “Other” with the build command above). Output is handled by Nitro / Nuxt; do not set a custom Output Directory unless you know you need it.
+
+### NuxtHub
+
+Link the Vercel project to [NuxtHub](https://hub.nuxt.com) and provision **PostgreSQL** (plus KV, Blob, Cache as used by the app). See [ENVIRONMENT.md](./ENVIRONMENT.md) for env vars and [Architecture](./ARCHITECTURE.md) for storage.
+
+### Checklist
+
+1. Connect the repository to Vercel and set Root Directory + install/build as above.
+2. Link **NuxtHub** and set required environment variables (see [ENVIRONMENT.md](./ENVIRONMENT.md)).
+3. Configure your **GitHub App** callback URL: `https://<your-domain>/api/auth/callback/github`.
+4. Deploy.
+
+Vercel provides: [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) for code execution, [Vercel Workflow](https://useworkflow.dev) for content sync, and serverless functions for bot webhooks. For Turborepo remote cache and env vars, see [ENVIRONMENT.md](./ENVIRONMENT.md).
 

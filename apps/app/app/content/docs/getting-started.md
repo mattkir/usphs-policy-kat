@@ -180,7 +180,7 @@ The admin panel at `/admin` provides:
 USPHS Policy is built on:
 
 - [Nuxt](https://nuxt.com) -- full-stack Vue framework
-- [NuxtHub](https://hub.nuxt.com) -- database (SQLite), KV storage, and blob storage
+- [NuxtHub](https://hub.nuxt.com) -- database (PostgreSQL), KV storage, and blob storage
 - [Vercel AI SDK](https://ai-sdk.dev) -- AI model integration and tool system
 - [Vercel Sandbox](https://vercel.com/docs/vercel-sandbox) -- isolated execution environment
 - [Vercel Workflow](https://useworkflow.dev) -- durable workflow execution for content sync

@@ -47,7 +47,7 @@ USPHS Policy consists of two main components:
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────┐  │
 │  │ Sandbox Manager │  │ Vercel Workflow │  │      NuxtHub DB         │  │
 │  │                 │  │                 │  │                         │  │
-│  │ - Lifecycle     │  │ - Durable exec  │  │ - SQLite (sources,      │  │
+│  │ - Lifecycle     │  │ - Durable exec  │  │ - PostgreSQL (sources,  │  │
 │  │ - KV caching    │  │ - Auto retries  │  │   chats, messages,      │  │
 │  │ - Command exec  │  │ - Sync sources  │  │   agent_config, stats)  │  │
 │  └────────┬────────┘  └────────┬────────┘  │ - KV (sessions, cache)  │  │
@@ -112,31 +112,27 @@ usphs-policy-kat/
 
 ### 1. Sources (Database)
 
-Sources are stored in SQLite via [NuxtHub](https://hub.nuxt.com) and managed through the admin interface. See [Sources](./SOURCES.md) for configuration details.
+Sources are stored in **PostgreSQL** via [NuxtHub](https://hub.nuxt.com) and managed through the admin interface. See [Sources](./SOURCES.md) for configuration details.
 
 #### Database Schema
 
+The canonical definition is [`apps/app/server/db/schema.ts`](../apps/app/server/db/schema.ts) (Drizzle `pgTable`). The `sources` table is representative:
+
 ```typescript
-export const sources = sqliteTable('sources', {
-  id: text('id').primaryKey(),
-  type: text('type', { enum: ['github', 'youtube'] }).notNull(),
+export const sources = pgTable('sources', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  type: text('type', { enum: ['github', 'youtube', 'file'] }).notNull(),
   label: text('label').notNull(),
   basePath: text('base_path').default('/docs'),
-
-  // GitHub fields
   repo: text('repo'),
   branch: text('branch'),
   contentPath: text('content_path'),
   outputPath: text('output_path'),
-  readmeOnly: integer('readme_only', { mode: 'boolean' }),
-
-  // YouTube fields
+  readmeOnly: boolean('readme_only').default(false),
   channelId: text('channel_id'),
   handle: text('handle'),
-  maxVideos: integer('max_videos'),
-
-  createdAt: integer('created_at', { mode: 'timestamp' }),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }),
+  maxVideos: integer('max_videos').default(50),
+  // ...timestamps — see schema.ts
 })
 ```
 
@@ -335,7 +331,7 @@ Authentication uses [Better Auth](https://www.better-auth.com) with the [`@onmax
 
 ## Storage Strategy
 
-### [NuxtHub](https://hub.nuxt.com) SQLite
+### [NuxtHub](https://hub.nuxt.com) PostgreSQL
 
 Used for persistent data (via [Drizzle ORM](https://orm.drizzle.team)):
 

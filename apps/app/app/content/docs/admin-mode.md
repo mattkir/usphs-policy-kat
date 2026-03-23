@@ -63,7 +63,7 @@ This means:
 
 - **Logs are queryable** -- the admin tools can search, filter, and aggregate log data
 - **Retention is automatic** -- logs older than 7 days are cleaned up by a daily cron job
-- **No external service needed** -- everything is stored in your NuxtHub SQLite database
+- **No external service needed** -- everything is stored in your NuxtHub PostgreSQL database
 
 Each log event includes the HTTP method, path, status code, duration, request ID, and optional structured data. The `query_logs`, `log_stats`, and `query_errors` tools leverage this data to give you real-time insights into your application.
 

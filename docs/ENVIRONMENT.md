@@ -151,6 +151,23 @@ When using the SDK from an external application:
 | `SAVOIR_API_URL` | Base URL of your deployed instance (e.g. `https://your-app.vercel.app`) |
 | `SAVOIR_API_KEY` | API key generated from the admin panel at `/admin/api-keys` |
 
+## Vercel (monorepo / Turborepo remote cache)
+
+**Project settings:** Use **Bun** for installs. From the repository root, the app build is `bunx turbo run build --filter=@savoir/app` (after `bun install`). If the Vercel **Root Directory** is `apps/app`, use `bun run build` there after installing from the monorepo root as your workflow requires. **`vercel.json` is only applied from the directory Vercel treats as the project root** — see [Customization § Deploy](./CUSTOMIZATION.md#7-deploy) for Root Directory vs [`apps/app/vercel.json`](../apps/app/vercel.json) (crons).
+
+This repo uses [Turborepo](https://turbo.build/) with a root `prepare` script that builds workspace packages (`turbo run build --filter='./packages/*'`) during `bun install`, and the app build runs `^build` again so dependencies stay up to date. That is expected; the second pass should be fast when **remote cache writes** work.
+
+If Vercel logs show `failed to put to http cache: cache disabled` while also printing `Remote caching enabled`, Turbo cannot **upload** cache artifacts. Fix it so repeat builds get cache hits and CI time drops:
+
+1. **Preferred (Vercel dashboard):** [Turborepo on Vercel](https://vercel.com/docs/monorepos/turborepo) — ensure the project uses the monorepo root, and in **Team Settings** enable **Turborepo Remote Cache** (or the equivalent Remote Caching toggle for your plan). Vercel can inject the right credentials for Turbo when the integration is on.
+2. **Manual tokens:** Create a token in the [Turborepo dashboard](https://turbo.build/repo) (or your org’s documented process) and add to the Vercel project:
+   - `TURBO_TOKEN` — API token with cache read/write
+   - `TURBO_TEAM` — your team **slug** (from the Turbo or Vercel team URL), sometimes documented as `TURBO_TEAMID` depending on tooling version
+
+After uploads succeed, you should see cache **hits** on unchanged packages instead of repeated `cache miss` for the same task hashes.
+
+**Note:** Remote cache behavior is controlled by Vercel/Turbo; nothing in this repository substitutes for setting the above on the deployment environment.
+
 ## Database
 
 Migrations run automatically when the application starts — no manual step needed.

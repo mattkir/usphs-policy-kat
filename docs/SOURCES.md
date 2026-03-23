@@ -23,30 +23,29 @@ const sources = await savoir.client.getSources()
 
 ## Database Storage
 
-Sources are stored in SQLite via NuxtHub. The schema:
+Sources are stored in **PostgreSQL** via [NuxtHub](https://hub.nuxt.com) (`hub.db: 'postgresql'` in the app). The schema (see [`apps/app/server/db/schema.ts`](../apps/app/server/db/schema.ts)):
 
 ```typescript
-export const sources = sqliteTable('sources', {
-  id: text('id').primaryKey(),
-  type: text('type', { enum: ['github', 'youtube'] }).notNull(),
+import { pgTable, text, integer, boolean, index, timestamp } from 'drizzle-orm/pg-core'
+
+const timestamps = { createdAt: timestamp('created_at').notNull().defaultNow() }
+
+export const sources = pgTable('sources', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  type: text('type', { enum: ['github', 'youtube', 'file'] }).notNull(),
   label: text('label').notNull(),
   basePath: text('base_path').default('/docs'),
-
-  // GitHub fields
   repo: text('repo'),
   branch: text('branch'),
   contentPath: text('content_path'),
   outputPath: text('output_path'),
-  readmeOnly: integer('readme_only', { mode: 'boolean' }),
-
-  // YouTube fields
+  readmeOnly: boolean('readme_only').default(false),
   channelId: text('channel_id'),
   handle: text('handle'),
   maxVideos: integer('max_videos').default(50),
-
-  createdAt: integer('created_at', { mode: 'timestamp' }),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }),
-})
+  ...timestamps,
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => [index('sources_type_idx').on(table.type)])
 ```
 
 ## Source Types

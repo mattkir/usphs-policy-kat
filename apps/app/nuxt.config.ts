@@ -41,7 +41,9 @@ export default defineNuxtConfig({
 
   vite: {
     build: {
-      chunkSizeWarningLimit: 1000,
+      // Default Rollup chunking keeps Nuxt UI / Vue / charts in a consistent graph; aggressive manualChunks caused circular chunk warnings and oversized output.
+      // ~1.2–1.4 MB minified vendor chunks are expected for this stack; raise limit to avoid noisy CI warnings (optimize further with route-level lazy imports if needed).
+      chunkSizeWarningLimit: 1500,
     },
   },
 

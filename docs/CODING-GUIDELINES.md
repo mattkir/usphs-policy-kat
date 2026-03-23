@@ -37,7 +37,7 @@ export function getSession()
 Section dividers ARE useful in data structures to group related fields:
 
 ```typescript
-export const sources = sqliteTable('sources', {
+export const sources = pgTable('sources', {
   // Common fields
   label: text('label'),
 

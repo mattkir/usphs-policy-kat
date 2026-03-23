@@ -56,4 +56,4 @@ curl -X POST <your-url>/api/sync \
 
 - After adding sources, always trigger a **sync** to pull content
 - YouTube sources require `NUXT_YOUTUBE_API_KEY` to be set
-- Sources are stored in SQLite and can be managed from the admin UI at any time
+- Sources are stored in PostgreSQL (NuxtHub) and can be managed from the admin UI at any time
