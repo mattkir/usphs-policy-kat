@@ -31,6 +31,8 @@
         "GITHUB_CLIENT_SECRET",
         "POSTGRES_URL",
         "DATABASE_URL",
+        "usphs_policy_POSTGRES_URL",
+        "usphs_policy_DATABASE_URL",
         "BLOB_READ_WRITE_TOKEN",
         "KV_URL",
         "KV_REST_API_TOKEN",

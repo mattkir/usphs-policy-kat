@@ -7,6 +7,8 @@ describe('resolvePostgresUrl', () => {
       POSTGRES_URL: 'postgres://primary',
       POSTGRESQL_URL: 'postgres://secondary',
       DATABASE_URL: 'postgres://tertiary',
+      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
+      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
     })).toBe('postgres://primary')
   })
 
@@ -21,6 +23,31 @@ describe('resolvePostgresUrl', () => {
     expect(resolvePostgresUrl({
       DATABASE_URL: 'postgres://tertiary',
     })).toBe('postgres://tertiary')
+  })
+
+  it('falls back to the legacy prefixed POSTGRES_URL when standard env vars are missing', () => {
+    expect(resolvePostgresUrl({
+      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
+      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
+    })).toBe('postgres://legacy-primary')
+  })
+
+  it('falls back to the legacy prefixed DATABASE_URL when it is the only configured database env var', () => {
+    expect(resolvePostgresUrl({
+      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
+    })).toBe('postgres://legacy-secondary')
+  })
+
+  it('prefers standard env vars over legacy prefixed env vars', () => {
+    expect(resolvePostgresUrl({
+      DATABASE_URL: 'postgres://tertiary',
+      usphs_policy_POSTGRES_URL: 'postgres://legacy-primary',
+      usphs_policy_DATABASE_URL: 'postgres://legacy-secondary',
+    })).toBe('postgres://tertiary')
+  })
+
+  it('returns an empty string when no supported database env vars are configured', () => {
+    expect(resolvePostgresUrl({})).toBe('')
   })
 })
 

@@ -16,7 +16,7 @@ cp apps/app/.env.example apps/app/.env
 | `GITHUB_CLIENT_ID` | From your [GitHub App settings](https://github.com/settings/apps) → Client ID |
 | `GITHUB_CLIENT_SECRET` | From your [GitHub App settings](https://github.com/settings/apps) → Generate a client secret |
 
-For Vercel production, you also need a PostgreSQL connection via `POSTGRES_URL`, `POSTGRESQL_URL`, or `DATABASE_URL` (Vercel Postgres recommended). For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
+For Vercel production, you also need a PostgreSQL connection via `POSTGRES_URL`, `POSTGRESQL_URL`, or `DATABASE_URL` (Vercel Postgres recommended). Legacy project-prefixed names such as `usphs_policy_POSTGRES_URL` and `usphs_policy_DATABASE_URL` are accepted only as a temporary compatibility fallback during migration. For **local development**, you also need `AI_GATEWAY_API_KEY` (see [AI](#ai) below). Everything else is optional.
 
 ## Authentication
 
@@ -143,6 +143,8 @@ Recommended setup:
 3. Redeploy so NuxtHub resolves the production database driver to `postgres-js`
 
 If none of these variables are present in Vercel production, startup will fail fast with a configuration error instead of trying to write to `.data/db/pglite`.
+
+Legacy note: some older Vercel setups in this repo used project-prefixed variables such as `usphs_policy_POSTGRES_URL` and `usphs_policy_DATABASE_URL`. The app still accepts those names temporarily, and `turbo.json` still forwards them during builds, but the intended long-term configuration is to standardize on unprefixed `POSTGRES_URL` or `DATABASE_URL` in Vercel.
 
 ### `REDIS_URL`
 
