@@ -9,6 +9,10 @@ import { hasContextProvider } from './types'
 
 let botInstance: Chat | null = null
 
+function normalizeUserName(value: unknown): string {
+  return typeof value === 'string' ? value.replace(/^@/, '').trim() : ''
+}
+
 async function handleBotResponse(thread: Thread, message: Message) {
   const { adapter } = thread
   const startTime = Date.now()
@@ -84,27 +88,27 @@ ${error instanceof Error ? error.message : 'Unknown error'}
 function createBot(): Chat {
   const config = useRuntimeConfig()
 
-  const appName = (config.public.github?.appName as string)?.replace(/^@/, '')
-  if (!appName) {
-    throw createError({
-      message: 'GitHub App name not configured',
-      why: 'NUXT_PUBLIC_GITHUB_APP_NAME is not set',
-      fix: 'Set NUXT_PUBLIC_GITHUB_APP_NAME to the GitHub App name (e.g. your-bot-name)',
-    })
-  }
-
-  const botUserName = (config.public.github?.botTrigger as string)?.replace(/^@/, '') || appName
+  const githubAppName = normalizeUserName(config.public.github?.appName)
+  const configuredBotTrigger = normalizeUserName(config.public.github?.botTrigger)
+  const botUserName = configuredBotTrigger || githubAppName || 'usphs-policy'
 
   const adapters: Record<string, Adapter> = {}
 
   if (config.github.appId && config.github.appPrivateKey && config.github.webhookSecret) {
-    adapters.github = new SavoirGitHubAdapter({
-      appId: config.github.appId,
-      privateKey: config.github.appPrivateKey,
-      webhookSecret: config.github.webhookSecret,
-      userName: botUserName,
-      replyToNewIssues: config.github.replyToNewIssues as boolean,
-    })
+    if (!githubAppName) {
+      log.warn({
+        event: 'bot.github_adapter.skipped',
+        reason: 'missing_public_app_name',
+      })
+    } else {
+      adapters.github = new SavoirGitHubAdapter({
+        appId: config.github.appId,
+        privateKey: config.github.appPrivateKey,
+        webhookSecret: config.github.webhookSecret,
+        userName: botUserName,
+        replyToNewIssues: config.github.replyToNewIssues as boolean,
+      })
+    }
   }
 
   if (config.discord.botToken) {

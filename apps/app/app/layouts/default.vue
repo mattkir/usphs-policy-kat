@@ -28,8 +28,10 @@ const shareModal = overlay.create(LazyModalShare, {
   }
 })
 
-const { data: chatsResponse, refresh: refreshChats } = await useFetch<GetChatsResponse>('/api/chats', {
+const { data: chatsResponse, refresh: refreshChats, execute: fetchChats, clear: clearChats } = await useLazyFetch<GetChatsResponse>('/api/chats', {
   key: 'chats',
+  immediate: false,
+  server: false,
 })
 
 const chats = computed<UIChat[] | undefined>(() => chatsResponse.value?.map(chat => ({
@@ -44,10 +46,14 @@ const chats = computed<UIChat[] | undefined>(() => chatsResponse.value?.map(chat
   shareToken: chat.shareToken
 })))
 
-watch(loggedIn, () => {
-  refreshChats()
+watch(loggedIn, (isLoggedIn) => {
+  if (isLoggedIn) {
+    fetchChats()
+  } else {
+    clearChats()
+  }
   open.value = false
-})
+}, { immediate: true })
 
 const { groups } = useChats(chats)
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-definePageMeta({ auth: 'user' })
-
 useSeoMeta({ title: 'New chat' })
 
 const input = ref('')
 const loading = ref(false)
 const chatId = crypto.randomUUID()
+const { loggedIn } = useUserSession()
 
 const { model } = useModels()
 const { mode } = useChatMode()
@@ -22,6 +21,11 @@ const {
 } = useFileUploadWithStatus(chatId)
 
 async function createChat(prompt: string) {
+  if (!loggedIn.value) {
+    await navigateTo('/login')
+    return
+  }
+
   input.value = prompt
   loading.value = true
 
@@ -122,7 +126,25 @@ const quickChats = computed(() => mode.value === 'admin' ? adminQuickChats : cha
           How can I help you today?
         </h1>
 
+        <UAlert
+          v-if="!loggedIn"
+          color="neutral"
+          variant="subtle"
+          icon="i-lucide-log-in"
+          title="Sign in to start a chat"
+          description="Authentication is required before you can create chats or upload files."
+          :actions="[
+            {
+              label: 'Go to login',
+              color: 'neutral',
+              variant: 'soft',
+              to: '/login'
+            }
+          ]"
+        />
+
         <UChatPrompt
+          v-else
           v-model="input"
           :status="loading ? 'streaming' : 'ready'"
           :disabled="isUploading"

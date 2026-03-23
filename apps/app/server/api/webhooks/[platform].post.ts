@@ -16,7 +16,18 @@ export default defineEventHandler((event) => {
     })
   }
 
-  const bot = useBot()
+  let bot: ReturnType<typeof useBot>
+  try {
+    bot = useBot()
+  } catch (error) {
+    requestLog.set({ outcome: 'bot_init_failed' })
+    throw createError({
+      status: 503,
+      message: 'Bot initialization failed',
+      why: error instanceof Error ? error.message : 'Bot initialization failed unexpectedly',
+      fix: 'Verify the environment variables required for the configured bot adapters',
+    })
+  }
 
   const handler = bot.webhooks[platform as keyof typeof bot.webhooks]
   if (!handler) {
