@@ -64,12 +64,14 @@ export interface ApiErrorResponse {
 
 export interface SyncSource {
   id: string
-  type: 'github' | 'youtube'
+  type: 'github' | 'youtube' | 'file' | 'directory'
   label: string
+  basePath?: string | null
   repo?: string | null
   branch?: string | null
   contentPath?: string | null
   outputPath?: string | null
+  directoryPath?: string | null
   readmeOnly?: boolean | null
   channelId?: string | null
   handle?: string | null
@@ -105,8 +107,10 @@ export interface GitHubSource {
   id: string
   label: string
   type: 'github'
+  basePath: string | null
   repo: string
   branch: string
+  contentPath: string | null
   outputPath: string
   readmeOnly: boolean
 }
@@ -115,12 +119,37 @@ export interface YouTubeSource {
   id: string
   label: string
   type: 'youtube'
+  basePath: string | null
   channelId: string
   handle: string
+  maxVideos: number | null
+  outputPath: string | null
+}
+
+export interface FileSource {
+  id: string
+  label: string
+  type: 'file'
+  basePath: string | null
+  outputPath: string | null
+}
+
+export interface DirectorySource {
+  id: string
+  label: string
+  type: 'directory'
+  basePath: string | null
+  directoryPath: string
+  outputPath: string | null
 }
 
 export interface SourcesResponse {
   total: number
+  lastSyncAt?: number | null
+  youtubeEnabled?: boolean
+  snapshotRepo?: string | null
+  snapshotBranch?: string | null
+  snapshotRepoUrl?: string | null
   github: {
     count: number
     sources: GitHubSource[]
@@ -128,6 +157,14 @@ export interface SourcesResponse {
   youtube: {
     count: number
     sources: YouTubeSource[]
+  }
+  file: {
+    count: number
+    sources: FileSource[]
+  }
+  directory: {
+    count: number
+    sources: DirectorySource[]
   }
 }
 

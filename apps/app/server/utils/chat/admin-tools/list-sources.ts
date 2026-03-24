@@ -5,7 +5,7 @@ import { desc } from 'drizzle-orm'
 import { preview, cmd } from './_preview'
 
 export const listSourcesTool = tool({
-  description: `List all configured documentation sources (GitHub repos, YouTube channels).
+  description: `List all configured documentation sources (GitHub repos, YouTube channels, uploaded files, local directories).
 Use this to check what sources are available, their sync status, and configuration.`,
   inputSchema: z.object({}),
   execute: async function* () {
@@ -17,7 +17,7 @@ Use this to check what sources are available, their sync status, and configurati
       orderBy: () => desc(schema.sources.updatedAt),
     })
 
-    const sourcesData = sources.map(s => ({ id: s.id, type: s.type, label: s.label, repo: s.repo }))
+    const sourcesData = sources.map(s => ({ id: s.id, type: s.type, label: s.label, repo: s.repo, directoryPath: s.directoryPath }))
     yield {
       status: 'done' as const,
       commands: [cmd(label, preview(sourcesData))],
@@ -29,6 +29,7 @@ Use this to check what sources are available, their sync status, and configurati
         repo: s.repo,
         branch: s.branch,
         contentPath: s.contentPath,
+        directoryPath: s.directoryPath,
         handle: s.handle,
         readmeOnly: s.readmeOnly,
         createdAt: s.createdAt,

@@ -1,4 +1,4 @@
-import { pgTable, text, integer, index, uniqueIndex, real, boolean, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, integer, index, uniqueIndex, real, boolean, timestamp, jsonb, primaryKey } from 'drizzle-orm/pg-core'
 // Better Auth manages user/session/account tables automatically via hub:db
 import { relations } from 'drizzle-orm'
 
@@ -47,13 +47,14 @@ export const messagesRelations = relations(messages, ({ one }) => ({
 
 export const sources = pgTable('sources', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  type: text('type', { enum: ['github', 'youtube', 'file'] }).notNull(),
+  type: text('type', { enum: ['github', 'youtube', 'file', 'directory'] }).notNull(),
   label: text('label').notNull(),
   basePath: text('base_path').default('/docs'),
   repo: text('repo'),
   branch: text('branch'),
   contentPath: text('content_path'),
   outputPath: text('output_path'),
+  directoryPath: text('directory_path'),
   readmeOnly: boolean('readme_only').default(false),
   channelId: text('channel_id'),
   handle: text('handle'),
@@ -61,6 +62,18 @@ export const sources = pgTable('sources', {
   ...timestamps,
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, table => [index('sources_type_idx').on(table.type)])
+
+export const sourceDocuments = pgTable('source_documents', {
+  sourceId: text('source_id').notNull().references(() => sources.id, { onDelete: 'cascade' }),
+  relativePath: text('relative_path').notNull(),
+  contentHash: text('content_hash').notNull(),
+  snapshotPath: text('snapshot_path').notNull(),
+  kind: text('kind', { enum: ['md', 'mdx', 'txt', 'pdf', 'docx'] }).notNull(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => [
+  primaryKey({ columns: [table.sourceId, table.relativePath] }),
+  index('source_documents_source_id_idx').on(table.sourceId),
+])
 
 export const agentConfig = pgTable('agent_config', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),

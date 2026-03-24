@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type SourceType = 'github' | 'youtube' | 'file'
+type SourceType = 'github' | 'youtube' | 'file' | 'directory'
 
 const ALLOWED_EXTENSIONS = ['.md', '.mdx', '.txt', '.yml', '.yaml', '.json']
 
@@ -7,10 +7,12 @@ interface SourceData {
   id: string
   type: SourceType
   label: string
+  basePath: string | null
   repo: string | null
   branch: string | null
   contentPath: string | null
   outputPath: string | null
+  directoryPath: string | null
   readmeOnly: boolean | null
   channelId: string | null
   handle: string | null
@@ -45,13 +47,15 @@ const form = ref({
   branch: props.source?.branch || 'main',
   contentPath: props.source?.contentPath || '',
   outputPath: props.source?.outputPath || '',
-  basePath: (() => {
+  basePath: props.source?.basePath || (() => {
     const type = props.source?.type || props.defaultType || 'github'
     if (type === 'youtube') return '/youtube'
     if (type === 'file') return '/files'
+    if (type === 'directory') return '/docs'
     return '/docs'
   })(),
   readmeOnly: props.source?.readmeOnly || false,
+  directoryPath: props.source?.directoryPath || '',
   channelId: props.source?.channelId || '',
   handle: props.source?.handle || '',
   maxVideos: props.source?.maxVideos || 50,
@@ -60,6 +64,7 @@ const form = ref({
 const typeOptions = [
   { label: 'GitHub Repository', value: 'github', icon: 'i-simple-icons-github' },
   { label: 'YouTube Channel', value: 'youtube', icon: 'i-simple-icons-youtube' },
+  { label: 'Local Directory', value: 'directory', icon: 'i-lucide-folder-search-2' },
   { label: 'File Upload', value: 'file', icon: 'i-lucide-file-text' },
 ]
 
@@ -372,6 +377,29 @@ async function save() {
                   Between 1 and 500
                 </p>
               </div>
+            </div>
+          </template>
+
+          <template v-if="form.type === 'directory'">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-highlighted">
+                Directory Path <span class="text-error">*</span>
+              </label>
+              <UInput
+                v-model="form.directoryPath"
+                placeholder="policy/manuals"
+                icon="i-lucide-folder-search-2"
+              />
+              <p class="text-xs text-muted">
+                Relative to <code class="text-highlighted">NUXT_LOCAL_SOURCE_ROOT</code>. Sync re-reads this directory on the server and only re-extracts files whose content hash changed.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-default">
+              <UIcon name="i-lucide-info" class="size-3.5 text-muted shrink-0" />
+              <p class="text-xs text-muted">
+                Supported file types: <code class="text-highlighted">.md</code>, <code class="text-highlighted">.mdx</code>, <code class="text-highlighted">.txt</code>, <code class="text-highlighted">.pdf</code>, <code class="text-highlighted">.docx</code>
+              </p>
             </div>
           </template>
 

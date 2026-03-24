@@ -46,7 +46,41 @@ export interface FileSource {
   files: FileSourceEntry[]
 }
 
-export type Source = GitHubSource | YouTubeSource | FileSource
+export interface DirectorySourceDocument {
+  relativePath: string
+  contentHash: string
+  snapshotPath: string
+  kind: 'md' | 'mdx' | 'txt' | 'pdf' | 'docx'
+}
+
+export interface DirectorySourceWrite {
+  path: string
+  content: string
+}
+
+export interface DirectorySourceStats {
+  totalFiles: number
+  supportedFiles: number
+  skippedFiles: number
+  unchangedFiles: number
+  changedFiles: number
+  deletedFiles: number
+}
+
+export interface DirectorySource {
+  id: string
+  type: 'directory'
+  label: string
+  basePath: string
+  outputPath: string
+  directoryPath: string
+  writes: DirectorySourceWrite[]
+  deletes: string[]
+  documents: DirectorySourceDocument[]
+  stats: DirectorySourceStats
+}
+
+export type Source = GitHubSource | YouTubeSource | FileSource | DirectorySource
 
 export interface SyncSourceResult {
   sourceId: string

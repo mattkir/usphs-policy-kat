@@ -19,6 +19,7 @@ import type { Source, SyncConfig, SyncResult, SyncSourceResult } from './types'
 import {
   stepCreateSandbox,
   stepCleanupStale,
+  stepPersistDirectoryMetadata,
   stepSyncSource,
   stepPushChanges,
   stepTakeSnapshot,
@@ -82,6 +83,9 @@ export async function syncDocumentation(
 
   // Step 5: Take snapshot
   const { snapshotId } = await stepTakeSnapshot(sandboxId)
+
+  // Step 6: Persist directory source metadata after the sync fully succeeds
+  await stepPersistDirectoryMetadata(filteredSources)
 
   // Compute summary
   const successCount = results.filter((r: SyncSourceResult) => r.success).length

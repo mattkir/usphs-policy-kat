@@ -23,12 +23,13 @@ export default defineEventHandler(async () => {
   const github = allSources.filter(s => s.type === 'github')
   const youtube = hasYouTubeApiKey ? allSources.filter(s => s.type === 'youtube') : []
   const file = allSources.filter(s => s.type === 'file')
+  const directory = allSources.filter(s => s.type === 'directory')
 
   const snapshotRepo = snapshotConfig.snapshotRepo || null
   const snapshotBranch = snapshotConfig.snapshotBranch || 'main'
 
   return {
-    total: github.length + youtube.length + file.length,
+    total: github.length + youtube.length + file.length + directory.length,
     lastSyncAt,
     youtubeEnabled: hasYouTubeApiKey,
     snapshotRepo,
@@ -45,6 +46,10 @@ export default defineEventHandler(async () => {
     file: {
       count: file.length,
       sources: file,
+    },
+    directory: {
+      count: directory.length,
+      sources: directory,
     },
   }
 })

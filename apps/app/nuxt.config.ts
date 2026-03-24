@@ -159,7 +159,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     github: {
-      token: '',
+      token: process.env.NUXT_GITHUB_TOKEN || '',
       snapshotRepo: '',
       snapshotBranch: 'main',
       appId: '',
@@ -176,6 +176,7 @@ export default defineNuxtConfig({
     youtube: {
       apiKey: '',
     },
+    localSourceRoot: '',
     public: {
       github: {
         appName: '',

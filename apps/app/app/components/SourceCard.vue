@@ -3,12 +3,14 @@ import { useTimeoutFn } from '@vueuse/core'
 
 interface SourceData {
   id: string
-  type: 'github' | 'youtube' | 'file'
+  type: 'github' | 'youtube' | 'file' | 'directory'
   label: string
+  basePath: string | null
   repo: string | null
   branch: string | null
   contentPath: string | null
   outputPath: string | null
+  directoryPath: string | null
   readmeOnly: boolean | null
   channelId: string | null
   handle: string | null
@@ -51,6 +53,7 @@ const sourceUrl = computed(() => {
 const sourceIdentifier = computed(() => {
   if (props.source.type === 'github') return props.source.repo
   if (props.source.type === 'file') return 'Uploaded files'
+  if (props.source.type === 'directory') return props.source.directoryPath || 'Local directory'
   return props.source.handle || props.source.channelId
 })
 </script>
@@ -117,6 +120,21 @@ const sourceIdentifier = computed(() => {
             </div>
           </template>
           <template v-else-if="source.type === 'file'">
+            <UTooltip v-if="source.outputPath" text="Output folder in snapshot" :delay-open="200">
+              <div class="inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[11px] font-medium text-muted bg-muted">
+                <UIcon name="i-lucide-folder-output" class="size-3 opacity-60" />
+                {{ source.outputPath }}
+              </div>
+            </UTooltip>
+          </template>
+          <template v-else-if="source.type === 'directory'">
+            <div
+              v-if="source.directoryPath"
+              class="inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[11px] font-medium text-muted bg-muted"
+            >
+              <UIcon name="i-lucide-folder-search-2" class="size-3 opacity-60" />
+              {{ source.directoryPath }}
+            </div>
             <UTooltip v-if="source.outputPath" text="Output folder in snapshot" :delay-open="200">
               <div class="inline-flex items-center gap-1 h-[22px] px-2 rounded-md text-[11px] font-medium text-muted bg-muted">
                 <UIcon name="i-lucide-folder-output" class="size-3 opacity-60" />

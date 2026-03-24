@@ -2,12 +2,14 @@ import { blob } from 'hub:blob'
 import { kv } from '@nuxthub/kv'
 import { start } from 'workflow/api'
 import { z } from 'zod'
-import { db } from '@nuxthub/db'
+import { db, schema } from '@nuxthub/db'
+import { eq } from 'drizzle-orm'
 import { syncDocumentation } from '../../workflows/sync-docs'
 import type { Source } from '../../workflows/sync-docs'
 import type { FileSourceEntry } from '../../workflows/sync-docs/types'
 import { KV_KEYS } from '../../utils/sandbox/types'
 import { getSnapshotRepoConfig } from '../../utils/sandbox/snapshot-config'
+import { prepareDirectorySourceForSync } from '../../utils/sources/directory-source'
 
 const bodySchema = z
   .object({
@@ -28,6 +30,7 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, data => bodySchema.parse(data))
   const config = useRuntimeConfig()
   const snapshotConfig = await getSnapshotRepoConfig()
+  const { localSourceRoot } = config
 
   requestLog.set({ sourceFilter: body?.sourceFilter })
 
@@ -76,6 +79,25 @@ export default defineEventHandler(async (event) => {
         outputPath: s.outputPath || s.id,
         files,
       }
+    }
+
+    if (s.type === 'directory') {
+      const existingDocuments = await db.select({
+        relativePath: schema.sourceDocuments.relativePath,
+        contentHash: schema.sourceDocuments.contentHash,
+        snapshotPath: schema.sourceDocuments.snapshotPath,
+        kind: schema.sourceDocuments.kind,
+      })
+        .from(schema.sourceDocuments)
+        .where(eq(schema.sourceDocuments.sourceId, s.id))
+
+      return await prepareDirectorySourceForSync({
+        id: s.id,
+        label: s.label,
+        basePath: s.basePath,
+        outputPath: s.outputPath,
+        directoryPath: s.directoryPath,
+      }, existingDocuments, localSourceRoot)
     }
 
     return {

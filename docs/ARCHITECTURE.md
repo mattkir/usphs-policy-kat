@@ -301,6 +301,12 @@ Authentication uses [Better Auth](https://www.better-auth.com) with the [`@onmax
 | GET | `/api/snapshot/status` | Admin | Current vs latest snapshot |
 | POST | `/api/snapshot/sync` | Admin | Sync to latest snapshot |
 
+### Admin Diagnostics
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/admin/diagnostics/local-sources` | Admin | Check local directory source prerequisites (`NUXT_LOCAL_SOURCE_ROOT`, `pdftotext`, `textutil`/`unzip`) |
+
 ### Agent Config
 
 | Method | Endpoint | Auth | Description |

@@ -71,8 +71,20 @@ These control how the app syncs knowledge sources into the sandbox. Most snapsho
 | `NUXT_GITHUB_SNAPSHOT_REPO` | — | Snapshot repository in `owner/repo` format. Configurable from admin UI. |
 | `NUXT_GITHUB_SNAPSHOT_BRANCH` | `main` | Branch to use for snapshots |
 | `NUXT_GITHUB_TOKEN` | — | Fallback PAT for git operations. Only needed if GitHub App tokens are unavailable. |
+| `NUXT_LOCAL_SOURCE_ROOT` | — | Absolute server-local root directory for `directory` sources. The admin UI stores paths relative to this root. |
 | `NUXT_SANDBOX_GIT_EMAIL` | — | **Required** for pushes: `git config user.email` in the sandbox. Use your [GitHub noreply or verified email](https://github.com/settings/emails). |
 | `NUXT_SANDBOX_GIT_NAME` | — | **Required** for pushes: `git config user.name` in the sandbox (e.g. your display name). |
+
+When local directory sources are enabled, application startup now validates the local-source prerequisites and fails fast if they are missing.
+
+Required host programs for local directory sources:
+
+| Program | Why it is needed | Install guidance |
+|---------|------------------|------------------|
+| `pdftotext` | PDF text extraction | macOS: `brew install poppler`; Linux: install `poppler-utils` |
+| `textutil` or `unzip` | DOCX extraction | macOS: `textutil` is system-provided; Linux: install `unzip` |
+
+The admin diagnostics surface at `/admin/sandbox` also reports whether `NUXT_LOCAL_SOURCE_ROOT` and these binaries are available on the current host.
 
 ## GitHub Bot (optional)
 

@@ -13,5 +13,7 @@ export { stepSyncSource } from './sync-source'
 export { stepPushChanges } from './push-changes'
 export type { PushChangesConfig, PushChangesResult } from './push-changes'
 
+export { stepPersistDirectoryMetadata } from './persist-directory-metadata'
+
 export { stepTakeSnapshot } from './take-snapshot'
 export type { TakeSnapshotResult } from './take-snapshot'

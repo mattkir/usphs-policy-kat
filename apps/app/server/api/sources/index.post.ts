@@ -1,19 +1,5 @@
 import { db, schema } from '@nuxthub/db'
-import { z } from 'zod'
-
-const bodySchema = z.object({
-  type: z.enum(['github', 'youtube', 'file']),
-  label: z.string().min(1),
-  basePath: z.string().optional().default('/docs'),
-  repo: z.string().optional(),
-  branch: z.string().optional().default('main'),
-  contentPath: z.string().optional(),
-  outputPath: z.string().optional(),
-  readmeOnly: z.boolean().optional().default(false),
-  channelId: z.string().optional(),
-  handle: z.string().optional(),
-  maxVideos: z.number().optional().default(50),
-})
+import { createSourceBodySchema, normalizeCreateSourceBody } from '../../utils/sources/source-input'
 
 /**
  * POST /api/sources
@@ -22,7 +8,9 @@ const bodySchema = z.object({
 export default defineEventHandler(async (event) => {
   const requestLog = useLogger(event)
   await requireAdmin(event)
-  const body = await readValidatedBody(event, bodySchema.parse)
+  const config = useRuntimeConfig()
+  const parsedBody = await readValidatedBody(event, createSourceBodySchema.parse)
+  const body = await normalizeCreateSourceBody(parsedBody, config.localSourceRoot)
 
   requestLog.set({ type: body.type, label: body.label })
 
@@ -36,6 +24,7 @@ export default defineEventHandler(async (event) => {
       branch: body.branch,
       contentPath: body.contentPath,
       outputPath: body.outputPath,
+      directoryPath: body.directoryPath,
       readmeOnly: body.readmeOnly,
       channelId: body.channelId,
       handle: body.handle,

@@ -4,6 +4,36 @@ import { LazyModalConfirm } from '#components'
 
 useSeoMeta({ title: 'Sandbox - Admin' })
 
+interface LocalSourceCheck {
+  key: string
+  label: string
+  status: 'ok' | 'error'
+  message: string
+  details?: string
+  fix?: string
+}
+
+interface LocalSourceDiagnostics {
+  healthy: boolean
+  platform: string
+  localSourceRoot: {
+    status: 'ok' | 'error'
+    configuredValue: string | null
+    resolvedPath: string | null
+    exists: boolean
+    isDirectory: boolean
+    message: string
+    fix?: string
+  }
+  binaries: {
+    pdftotext: { resolvedPath: string | null }
+    textutil: { resolvedPath: string | null }
+    unzip: { resolvedPath: string | null }
+  }
+  checks: LocalSourceCheck[]
+  recommendations: string[]
+}
+
 const toast = useToast()
 const overlay = useOverlay()
 const { showError } = useErrorToast()
@@ -19,6 +49,11 @@ const {
 } = useSnapshotSync()
 
 const { data: snapshotConfig, refresh: refreshSnapshotConfig } = useLazyFetch('/api/snapshot/config')
+const {
+  data: localSourceDiagnostics,
+  refresh: refreshLocalSourceDiagnostics,
+  status: localSourceDiagnosticsStatus,
+} = useLazyFetch<LocalSourceDiagnostics>('/api/admin/diagnostics/local-sources')
 const { fetchRepos } = useGitHub()
 const { data: repoCatalog, status: repoCatalogStatus } = fetchRepos({ lazy: true })
 
@@ -56,6 +91,7 @@ const createdAgo = computed(() => {
 })
 
 const isInitialLoading = computed(() => status.value === null)
+const localSourceHealthy = computed(() => localSourceDiagnostics.value?.healthy ?? false)
 
 async function saveSnapshotConfig() {
   isSavingConfig.value = true
@@ -142,6 +178,14 @@ async function reloadRepositories() {
   }
 }
 
+async function reloadLocalSourceDiagnostics() {
+  try {
+    await refreshLocalSourceDiagnostics()
+  } catch (error) {
+    showError(error, { fallback: 'Failed to refresh local source diagnostics' })
+  }
+}
+
 watch(selectedSuggestion, (value) => {
   if (!value) return
   snapshotRepoInput.value = value
@@ -158,6 +202,109 @@ watch(selectedSuggestion, (value) => {
         Manage sandbox snapshots. Snapshots are pre-configured environments used by the AI to read documentation.
       </p>
     </header>
+
+    <section class="mb-8">
+      <p class="text-[10px] text-muted mb-3 font-pixel tracking-wide uppercase">
+        Local Source Diagnostics
+      </p>
+      <div class="rounded-lg border border-default p-4 space-y-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span
+                class="size-2 rounded-full"
+                :class="localSourceHealthy ? 'bg-success' : 'bg-error'"
+              />
+              <span class="text-sm font-medium text-highlighted">
+                {{ localSourceHealthy ? 'Healthy' : 'Action required' }}
+              </span>
+            </div>
+            <p class="text-xs text-muted mt-1">
+              Checks whether <code class="text-highlighted">NUXT_LOCAL_SOURCE_ROOT</code> and required extraction binaries are available on the host.
+            </p>
+          </div>
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-refresh-cw"
+            :loading="localSourceDiagnosticsStatus === 'pending'"
+            @click="reloadLocalSourceDiagnostics"
+          >
+            Refresh
+          </UButton>
+        </div>
+
+        <template v-if="localSourceDiagnostics">
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="rounded-lg border border-default bg-elevated/30 p-3">
+              <p class="text-muted mb-1">
+                Configured Root
+              </p>
+              <p class="font-mono text-highlighted break-all">
+                {{ localSourceDiagnostics.localSourceRoot.configuredValue || 'Not set' }}
+              </p>
+            </div>
+            <div class="rounded-lg border border-default bg-elevated/30 p-3">
+              <p class="text-muted mb-1">
+                Resolved Path
+              </p>
+              <p class="font-mono text-highlighted break-all">
+                {{ localSourceDiagnostics.localSourceRoot.resolvedPath || 'Unavailable' }}
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div
+              v-for="check in localSourceDiagnostics.checks"
+              :key="check.key"
+              class="rounded-lg border p-3"
+              :class="check.status === 'ok' ? 'border-success/20 bg-success/5' : 'border-error/20 bg-error/5'"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-medium text-highlighted">
+                    {{ check.label }}
+                  </p>
+                  <p class="text-xs text-muted mt-0.5">
+                    {{ check.message }}
+                  </p>
+                  <p v-if="check.details" class="text-xs font-mono text-highlighted mt-2 break-all">
+                    {{ check.details }}
+                  </p>
+                  <p v-if="check.fix" class="text-xs text-error mt-2">
+                    {{ check.fix }}
+                  </p>
+                </div>
+                <UBadge
+                  size="sm"
+                  :color="check.status === 'ok' ? 'success' : 'error'"
+                  variant="soft"
+                >
+                  {{ check.status }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-default bg-elevated/30 p-3">
+            <p class="text-xs text-highlighted mb-2">
+              Recommended setup commands
+            </p>
+            <div class="space-y-2">
+              <code
+                v-for="recommendation in localSourceDiagnostics.recommendations"
+                :key="recommendation"
+                class="block text-xs font-mono bg-default rounded px-2 py-1 break-all"
+              >
+                {{ recommendation }}
+              </code>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
 
     <section class="mb-8">
       <p class="text-[10px] text-muted mb-3 font-pixel tracking-wide uppercase">

@@ -1,8 +1,9 @@
+import path from 'node:path'
 import type { Sandbox } from '@vercel/sandbox'
 import { createError, log } from 'evlog'
 import { youtube } from '@googleapis/youtube'
 import { YoutubeTranscript } from 'youtube-transcript'
-import type { FileSource, GitHubSource, Source, SyncSourceResult, YouTubeSource } from '../../workflows/sync-docs/types'
+import type { DirectorySource, FileSource, GitHubSource, Source, SyncSourceResult, YouTubeSource } from '../../workflows/sync-docs/types'
 
 interface YouTubeVideo {
   id: string
@@ -407,6 +408,76 @@ export async function syncFileSource(
   }
 }
 
+/** Applies precomputed directory-source writes/deletes to the sandbox. */
+export async function syncDirectorySource(
+  sandbox: Sandbox,
+  source: DirectorySource,
+): Promise<SyncSourceResult> {
+  const basePath = source.basePath || '/docs'
+  const outputPath = source.outputPath || source.id
+  const targetDir = `/vercel/sandbox${basePath}/${outputPath}`
+
+  try {
+    log.info('sync', `Starting directory sync for "${source.label}" from ${source.directoryPath}`)
+
+    await sandbox.runCommand({
+      cmd: 'mkdir',
+      args: ['-p', targetDir],
+      cwd: '/vercel/sandbox',
+    })
+
+    for (const relativePath of source.deletes) {
+      await sandbox.runCommand({
+        cmd: 'rm',
+        args: ['-f', path.posix.join(targetDir, relativePath)],
+        cwd: '/vercel/sandbox',
+      })
+    }
+
+    for (const write of source.writes) {
+      const filepath = path.posix.join(targetDir, write.path)
+      const directory = path.posix.dirname(filepath)
+
+      await sandbox.runCommand({
+        cmd: 'mkdir',
+        args: ['-p', directory],
+        cwd: '/vercel/sandbox',
+      })
+
+      await sandbox.runCommand({
+        cmd: 'sh',
+        args: ['-c', `cat > "$1" << 'EOFMARKER'\n${write.content}\nEOFMARKER`, 'sh', filepath],
+        cwd: '/vercel/sandbox',
+      })
+    }
+
+    await sandbox.runCommand({
+      cmd: 'sh',
+      args: ['-c', `find ${targetDir} -type d -empty -delete`],
+      cwd: '/vercel/sandbox',
+    })
+
+    log.info('sync', `Directory sync completed for "${source.label}": ${source.stats.changedFiles} changed, ${source.stats.unchangedFiles} unchanged, ${source.stats.deletedFiles} deleted, ${source.stats.skippedFiles} skipped`)
+
+    return {
+      sourceId: source.id,
+      label: source.label,
+      success: true,
+      fileCount: source.stats.changedFiles,
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    log.error('sync', `Directory sync failed for "${source.label}": ${errorMessage}`)
+    return {
+      sourceId: source.id,
+      label: source.label,
+      success: false,
+      fileCount: 0,
+      error: errorMessage,
+    }
+  }
+}
+
 /** Removes directories in the sandbox that don't belong to any active source */
 export async function cleanupStaleSources(
   sandbox: Sandbox,
@@ -484,6 +555,8 @@ export async function syncSources(
       }
     } else if (source.type === 'file') {
       result = await syncFileSource(sandbox, source)
+    } else if (source.type === 'directory') {
+      result = await syncDirectorySource(sandbox, source)
     } else {
       const unknownSource = source as Source
       result = {

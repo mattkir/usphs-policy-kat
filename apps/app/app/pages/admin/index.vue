@@ -10,12 +10,14 @@ const ITEMS_PER_PAGE = 5
 
 interface SerializedSource {
   id: string
-  type: 'github' | 'youtube' | 'file'
+  type: 'github' | 'youtube' | 'file' | 'directory'
   label: string
+  basePath: string | null
   repo: string | null
   branch: string | null
   contentPath: string | null
   outputPath: string | null
+  directoryPath: string | null
   readmeOnly: boolean | null
   channelId: string | null
   handle: string | null
@@ -40,12 +42,14 @@ watch(sources, (v) => {
 
 const editingSource = ref<SerializedSource | null>(null)
 const showNewFileModal = ref(false)
+const showNewDirectoryModal = ref(false)
 const isSyncingAll = ref(false)
 
 const searchQuery = ref('')
 const githubPage = ref(1)
 const youtubePage = ref(1)
 const filePage = ref(1)
+const directoryPage = ref(1)
 
 const deleteModal = overlay.create(LazyModalConfirm)
 
@@ -69,13 +73,15 @@ function filterSources(sourceList: SerializedSource[] | undefined) {
     const repo = source.repo?.toLowerCase() || ''
     const handle = source.handle?.toLowerCase() || ''
     const channelId = source.channelId?.toLowerCase() || ''
-    return label.includes(query) || repo.includes(query) || handle.includes(query) || channelId.includes(query)
+    const directoryPath = source.directoryPath?.toLowerCase() || ''
+    return label.includes(query) || repo.includes(query) || handle.includes(query) || channelId.includes(query) || directoryPath.includes(query)
   })
 }
 
 const filteredGithubSources = computed(() => filterSources(sources.value?.github?.sources as SerializedSource[] | undefined))
 const filteredYoutubeSources = computed(() => filterSources(sources.value?.youtube?.sources as SerializedSource[] | undefined))
 const filteredFileSources = computed(() => filterSources(sources.value?.file?.sources as SerializedSource[] | undefined))
+const filteredDirectorySources = computed(() => filterSources(sources.value?.directory?.sources as SerializedSource[] | undefined))
 
 const paginatedGithubSources = computed(() => {
   const start = (githubPage.value - 1) * ITEMS_PER_PAGE
@@ -92,10 +98,16 @@ const paginatedFileSources = computed(() => {
   return filteredFileSources.value.slice(start, start + ITEMS_PER_PAGE)
 })
 
+const paginatedDirectorySources = computed(() => {
+  const start = (directoryPage.value - 1) * ITEMS_PER_PAGE
+  return filteredDirectorySources.value.slice(start, start + ITEMS_PER_PAGE)
+})
+
 watch(searchQuery, () => {
   githubPage.value = 1
   youtubePage.value = 1
   filePage.value = 1
+  directoryPage.value = 1
 })
 
 async function deleteSource(source: SerializedSource) {
@@ -125,6 +137,11 @@ async function deleteSource(source: SerializedSource) {
         ...sources.value.file,
         sources: sources.value.file.sources.filter(s => s.id !== source.id),
         count: source.type === 'file' ? sources.value.file.count - 1 : sources.value.file.count,
+      },
+      directory: {
+        ...sources.value.directory,
+        sources: sources.value.directory.sources.filter(s => s.id !== source.id),
+        count: source.type === 'directory' ? sources.value.directory.count - 1 : sources.value.directory.count,
       },
     }
   }
@@ -164,10 +181,11 @@ async function triggerSync(sourceId?: string) {
 function handleSaved() {
   editingSource.value = null
   showNewFileModal.value = false
+  showNewDirectoryModal.value = false
   refresh()
 }
 
-const hasSources = computed(() => (sources.value?.github?.count || 0) + (sources.value?.youtube?.count || 0) + (sources.value?.file?.count || 0) > 0)
+const hasSources = computed(() => (sources.value?.github?.count || 0) + (sources.value?.youtube?.count || 0) + (sources.value?.file?.count || 0) + (sources.value?.directory?.count || 0) > 0)
 </script>
 
 <template>
@@ -177,7 +195,7 @@ const hasSources = computed(() => (sources.value?.github?.count || 0) + (sources
         Sources
       </h1>
       <p class="text-sm text-muted max-w-lg">
-        Sources are knowledge bases that give the AI context. Connect GitHub repositories, YouTube channels, or upload files directly.
+        Sources are knowledge bases that give the AI context. Connect GitHub repositories, YouTube channels, local directories, or upload files directly.
       </p>
     </header>
 
@@ -406,6 +424,57 @@ const hasSources = computed(() => (sources.value?.github?.count || 0) + (sources
         <section>
           <div class="flex items-center justify-between mb-3">
             <p class="text-[10px] text-muted font-pixel tracking-wide uppercase">
+              Local Directories
+            </p>
+            <p v-if="filteredDirectorySources.length" class="text-xs text-muted">
+              {{ filteredDirectorySources.length }} {{ filteredDirectorySources.length === 1 ? 'source' : 'sources' }}
+            </p>
+          </div>
+
+          <template v-if="filteredDirectorySources.length">
+            <div class="rounded-lg border border-default divide-y divide-default overflow-hidden">
+              <div v-for="source in paginatedDirectorySources" :key="source.id" class="px-4 hover:bg-elevated/50 transition-colors">
+                <SourceCard
+                  :source
+                  @edit="editingSource = source"
+                  @delete="deleteSource(source)"
+                  @sync="triggerSync(source.id)"
+                />
+              </div>
+            </div>
+            <div v-if="filteredDirectorySources.length > ITEMS_PER_PAGE" class="flex justify-center mt-4">
+              <UPagination
+                v-model:page="directoryPage"
+                :items-per-page="ITEMS_PER_PAGE"
+                :total="filteredDirectorySources.length"
+                :sibling-count="1"
+                show-edges
+                size="sm"
+              />
+            </div>
+          </template>
+          <template v-else-if="sources?.directory?.count && searchQuery">
+            <div class="py-8 text-center border border-dashed border-default rounded-lg">
+              <p class="text-sm text-muted">
+                No directory sources match your search
+              </p>
+            </div>
+          </template>
+          <UButton
+            v-else
+            color="neutral"
+            variant="ghost"
+            class="w-full h-14 border border-dashed border-default hover:border-muted"
+            icon="i-lucide-plus"
+            @click="showNewDirectoryModal = true"
+          >
+            Add a local directory
+          </UButton>
+        </section>
+
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[10px] text-muted font-pixel tracking-wide uppercase">
               Uploaded Files
             </p>
             <p v-if="filteredFileSources.length" class="text-xs text-muted">
@@ -466,6 +535,13 @@ const hasSources = computed(() => (sources.value?.github?.count || 0) + (sources
         v-if="showNewFileModal"
         default-type="file"
         @close="showNewFileModal = false"
+        @saved="handleSaved"
+      />
+
+      <SourceModal
+        v-if="showNewDirectoryModal"
+        default-type="directory"
+        @close="showNewDirectoryModal = false"
         @saved="handleSaved"
       />
     </template>

@@ -34,5 +34,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  await db.delete(schema.sourceDocuments).where(eq(schema.sourceDocuments.sourceId, id))
+
   return { success: true }
 })

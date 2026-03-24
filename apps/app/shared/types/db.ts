@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm'
-import type { agentConfig, apiUsage, chats, messages, sources, usageStats } from '@nuxthub/db/schema'
+import type { agentConfig, apiUsage, chats, messages, sourceDocuments, sources, usageStats } from '@nuxthub/db/schema'
 
 export type DbChat = InferSelectModel<typeof chats>
 export type NewDbChat = InferInsertModel<typeof chats>
@@ -9,6 +9,9 @@ export type NewDbMessage = InferInsertModel<typeof messages>
 
 export type DbSource = InferSelectModel<typeof sources>
 export type NewDbSource = InferInsertModel<typeof sources>
+
+export type DbSourceDocument = InferSelectModel<typeof sourceDocuments>
+export type NewDbSourceDocument = InferInsertModel<typeof sourceDocuments>
 
 export type DbAgentConfig = InferSelectModel<typeof agentConfig>
 export type NewDbAgentConfig = InferInsertModel<typeof agentConfig>

@@ -18,13 +18,14 @@ interface SourceFiles {
 interface ExtractedSource {
   id: string
   data: {
-    type: 'github' | 'youtube' | 'file'
+    type: 'github' | 'youtube' | 'file' | 'directory'
     label: string
     repo: string
     branch: string
     contentPath: string
     outputPath: string
     basePath: string
+    directoryPath: string
     readmeOnly: boolean
     channelId: string
     handle: string
@@ -46,8 +47,8 @@ const { showError } = useErrorToast()
 const { data: sourcesData } = useLazyFetch('/api/sources')
 const youtubeEnabled = computed(() => sourcesData.value?.youtubeEnabled ?? false)
 
-const requestedType = (['youtube', 'file'].includes(route.query.type as string) ? route.query.type : 'github') as 'github' | 'youtube' | 'file'
-const initialType = (requestedType === 'youtube' && !youtubeEnabled.value ? 'github' : requestedType) as 'github' | 'youtube' | 'file'
+const requestedType = (['youtube', 'file', 'directory'].includes(route.query.type as string) ? route.query.type : 'github') as 'github' | 'youtube' | 'file' | 'directory'
+const initialType = (requestedType === 'youtube' && !youtubeEnabled.value ? 'github' : requestedType) as 'github' | 'youtube' | 'file' | 'directory'
 
 const isSubmitting = ref(false)
 const isExtracting = ref(false)
@@ -65,6 +66,7 @@ const sources = ref<ExtractedSource[]>([
       contentPath: '',
       outputPath: '',
       basePath: initialType === 'youtube' ? '/youtube' : initialType === 'file' ? '/files' : '/docs',
+      directoryPath: '',
       readmeOnly: false,
       channelId: '',
       handle: '',
@@ -82,7 +84,7 @@ watch(pendingFiles, (files) => {
 })
 
 function createSourceData(item?: SourceOcrItem) {
-  const type = (item?.type || 'github') as 'github' | 'youtube' | 'file'
+  const type = (item?.type || 'github') as 'github' | 'youtube' | 'file' | 'directory'
   return {
     type,
     label: item?.label || '',
@@ -91,6 +93,7 @@ function createSourceData(item?: SourceOcrItem) {
     contentPath: item?.contentPath || '',
     outputPath: '',
     basePath: type === 'youtube' ? '/youtube' : type === 'file' ? '/files' : '/docs',
+    directoryPath: '',
     readmeOnly: false,
     channelId: item?.channelId || '',
     handle: item?.handle || '',
@@ -259,6 +262,9 @@ function isSourceEmpty(source: ExtractedSource): boolean {
   if (d.type === 'file') {
     return !d.label && (!source.uploadFiles || source.uploadFiles.length === 0)
   }
+  if (d.type === 'directory') {
+    return !d.label && !d.directoryPath
+  }
   return !d.label && !d.channelId && !d.handle
 }
 
@@ -410,6 +416,7 @@ const typeOptions = computed(() => {
   }
 
   options.push({ label: 'File Upload', value: 'file', icon: 'i-lucide-file-text' })
+  options.push({ label: 'Local Directory', value: 'directory', icon: 'i-lucide-folder-search-2' })
 
   return options
 })
@@ -425,7 +432,7 @@ const validSourcesCount = computed(() => sources.value.filter(s => s.data.label)
         Add Sources
       </h1>
       <p class="text-sm text-muted">
-        Sources provide context to the AI. Connect your GitHub docs{{ youtubeEnabled ? ', YouTube channels,' : '' }} or upload files.
+        Sources provide context to the AI. Connect GitHub docs, local directories{{ youtubeEnabled ? ', YouTube channels' : '' }}, or upload files.
       </p>
     </header>
 
@@ -662,6 +669,21 @@ const validSourcesCount = computed(() => sources.value.filter(s => s.data.label)
                   </button>
                 </div>
               </div>
+            </template>
+
+            <template v-else-if="source.data.type === 'directory'">
+              <div class="grid grid-cols-1 gap-2">
+                <UInput
+                  v-model="source.data.directoryPath"
+                  placeholder="policy/manuals"
+                  size="sm"
+                  icon="i-lucide-folder-search-2"
+                  autocomplete="off"
+                />
+              </div>
+              <p class="text-[11px] text-muted">
+                Relative to <code class="text-highlighted">NUXT_LOCAL_SOURCE_ROOT</code>. Supported files: <code class="text-highlighted">.md</code>, <code class="text-highlighted">.mdx</code>, <code class="text-highlighted">.txt</code>, <code class="text-highlighted">.pdf</code>, <code class="text-highlighted">.docx</code>.
+              </p>
             </template>
 
             <div class="flex items-center gap-1.5 text-xs text-muted pt-1">

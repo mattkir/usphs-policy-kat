@@ -9,7 +9,7 @@ import { getStepMetadata, RetryableError } from 'workflow'
 import { log } from 'evlog'
 import { Sandbox } from '@vercel/sandbox'
 import type { Source, SyncSourceResult } from '../types'
-import { syncFileSource, syncGitHubSource, syncYouTubeSource } from '../../../utils/sandbox/source-sync'
+import { syncDirectorySource, syncFileSource, syncGitHubSource, syncYouTubeSource } from '../../../utils/sandbox/source-sync'
 
 export async function stepSyncSource(
   sandboxId: string,
@@ -42,6 +42,8 @@ export async function stepSyncSource(
     }
   } else if (source.type === 'file') {
     result = await syncFileSource(sandbox, source)
+  } else if (source.type === 'directory') {
+    result = await syncDirectorySource(sandbox, source)
   } else {
     const unknownSource = source as Source
     result = {

@@ -7,6 +7,7 @@ import { syncDocumentation } from '../../workflows/sync-docs'
 import type { Source } from '../../workflows/sync-docs'
 import type { FileSourceEntry } from '../../workflows/sync-docs/types'
 import { getSnapshotRepoConfig } from '../../utils/sandbox/snapshot-config'
+import { prepareDirectorySourceForSync } from '../../utils/sources/directory-source'
 
 const paramsSchema = z.object({
   source: z.string().min(1),
@@ -23,6 +24,7 @@ export default defineEventHandler(async (event) => {
   requestLog.set({ sourceId })
   const config = useRuntimeConfig()
   const snapshotConfig = await getSnapshotRepoConfig()
+  const { localSourceRoot } = config
 
   const dbSource = await db.query.sources.findFirst({
     where: eq(schema.sources.id, sourceId),
@@ -76,6 +78,23 @@ export default defineEventHandler(async (event) => {
       outputPath: dbSource.outputPath || dbSource.id,
       files,
     }
+  } else if (dbSource.type === 'directory') {
+    const existingDocuments = await db.select({
+      relativePath: schema.sourceDocuments.relativePath,
+      contentHash: schema.sourceDocuments.contentHash,
+      snapshotPath: schema.sourceDocuments.snapshotPath,
+      kind: schema.sourceDocuments.kind,
+    })
+      .from(schema.sourceDocuments)
+      .where(eq(schema.sourceDocuments.sourceId, dbSource.id))
+
+    source = await prepareDirectorySourceForSync({
+      id: dbSource.id,
+      label: dbSource.label,
+      basePath: dbSource.basePath,
+      outputPath: dbSource.outputPath,
+      directoryPath: dbSource.directoryPath,
+    }, existingDocuments, localSourceRoot)
   } else {
     source = {
       id: dbSource.id,
